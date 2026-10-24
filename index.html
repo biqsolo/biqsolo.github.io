@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biqsolo Digital | Premium Creative Agency</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased relative selection:bg-brand-500 selection:text-slate-950">
+
+    <!-- Announcement Bar -->
+    <div class="bg-gradient-to-r from-brand-700 via-brand-600 to-emerald-600 text-white text-xs sm:text-sm font-semibold py-2.5 px-4 text-center flex items-center justify-center gap-2 shadow-md">
+        <span>⚡ Welcome to Biqsolo Digital — Express 24-Hour Delivery Available!</span>
+        <a href="https://wa.me/2348077157441?text=Hello%20Biqsolo%20Digital,%20I%20want%20to%20inquire%20about%20a%20project." target="_blank" class="underline hover:text-slate-200 ml-1 inline-flex items-center gap-1 font-bold">
+            Chat on WhatsApp &rarr;
+        </a>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg shadow-brand-500/20">
+                    B
+                </div>
+                <div>
+                    <span class="text-2xl font-black tracking-tight text-white">Biqsolo<span class="text-brand-500"> Digital</span></span>
+                    <span class="block text-[10px] uppercase tracking-widest text-slate-400 font-semibold -mt-1">Creative Agency</span>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+                <a href="#services" class="hover:text-brand-500 transition-colors">Services</a>
+                <a href="#about" class="hover:text-brand-500 transition-colors">About Us</a>
+            </nav>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="openAuthModal('login')" class="px-4 py-2.5 rounded-xl text-slate-300 hover:text-white font-semibold text-sm transition-colors border border-transparent hover:border-slate-800">
+                    Log In
+                </button>
+                <button onclick="openAuthModal('signup')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-extrabold text-sm transition-all shadow-lg shadow-brand-500/20 transform hover:-translate-y-0.5">
+                    Client Portal
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative py-20 lg:py-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div class="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 text-brand-500 text-xs font-bold mb-8 shadow-inner">
+                <span class="w-2.5 h-2.5 rounded-full bg-brand-500 animate-ping"></span>
+                <span>PREMIUM GRAPHIC DESIGN & WEB DEVELOPMENT IN NIGERIA</span>
+            </div>
+            
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white mb-8 leading-tight">
+                Elevate Your Brand with <br class="hidden sm:inline"><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 via-emerald-400 to-teal-300">World-Class Digital Design</span>
+            </h1>
+
+            <p class="max-w-2xl mx-auto text-base sm:text-xl text-slate-300 mb-10 leading-relaxed">
+                From high-converting flyers and ATS-optimized CVs to modern logos and responsive custom websites. Sign up to view our full sample portfolio and pricing catalog.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button onclick="openAuthModal('signup')" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-black text-base transition-all shadow-xl shadow-brand-500/25 transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-lock-open"></i> Access Client Portal & Pricing
+                </button>
+                <a href="https://wa.me/2348077157441?text=Hello%20Biqsolo%20Digital,%20I%20would%20like%20to%20request%20a%20quote." target="_blank" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold text-base border border-slate-800 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-brand-500 text-lg"></i> Quick WhatsApp Inquiry
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Overview Grid with Sample Preview Images -->
+    <section id="services" class="py-20 bg-slate-900/50 border-t border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-3xl sm:text-4xl font-black text-white">Our Core Services</h2>
+                <p class="mt-4 text-slate-400 text-base">Sign in to browse live portfolio samples and detailed pricing packages.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Service Card 1 -->
+                <div class="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-xl hover:border-brand-500/50 transition-all group">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=600&q=80" alt="Graphic Design" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                        <span class="absolute top-4 left-4 bg-brand-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase">Visual Design</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white mb-2">Graphic & Brand Design</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-6">Flyers, logos, social media banners, and identity kits crafted for maximum business conversion.</p>
+                        <button onclick="openAuthModal('signup')" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-brand-500 hover:text-slate-950 text-slate-200 font-extrabold text-xs transition-all flex items-center justify-center gap-2">
+                            View Samples & Pricing &rarr;
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Service Card 2 -->
+                <div class="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-xl hover:border-brand-500/50 transition-all group">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=600&q=80" alt="Professional CV" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                        <span class="absolute top-4 left-4 bg-brand-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase">Career Branding</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white mb-2">Professional CV & Cover Letters</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-6">ATS-compatible resumes and compelling profiles designed to stand out to global recruiters.</p>
+                        <button onclick="openAuthModal('signup')" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-brand-500 hover:text-slate-950 text-slate-200 font-extrabold text-xs transition-all flex items-center justify-center gap-2">
+                            View Samples & Pricing &rarr;
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Service Card 3 -->
+                <div class="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-xl hover:border-brand-500/50 transition-all group">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=600&q=80" alt="Web Development" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                        <span class="absolute top-4 left-4 bg-brand-500 text-slate-950 text-xs font-black px-3 py-1 rounded-full uppercase">Engineering</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-white mb-2">Custom Website Development</h3>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-6">Lightning-fast, ultra-responsive modern static websites optimized for search engines and sales.</p>
+                        <button onclick="openAuthModal('signup')" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-brand-500 hover:text-slate-950 text-slate-200 font-extrabold text-xs transition-all flex items-center justify-center gap-2">
+                            View Samples & Pricing &rarr;
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating WhatsApp Direct Button -->
+    <a href="https://wa.me/2348077157441?text=Hello%20Biqsolo%20Digital,%20I%20have%20an%20inquiry." target="_blank" class="fixed bottom-6 right-6 z-30 w-14 h-14 bg-emerald-500 hover:bg-emerald-600 text-slate-950 rounded-full flex items-center justify-center shadow-2xl transition-transform hover:scale-110">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer id="about" class="border-t border-slate-800 bg-slate-950 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-4">
+                <div class="w-8 h-8 rounded-xl bg-brand-500 flex items-center justify-center text-slate-950 font-black text-lg">B</div>
+                <span class="text-xl font-black text-white">Biqsolo<span class="text-brand-500"> Digital</span></span>
+            </div>
+            <p class="text-slate-400 text-sm mb-2">&copy; 2026 Biqsolo Digital. All rights reserved.</p>
+            <p class="text-slate-500 text-xs">Direct Support Hotline: +234 807 715 7441</p>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-8 relative shadow-2xl">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex border-b border-slate-800 mb-6">
+                <button id="tabLogin" onclick="switchTab('login')" class="flex-1 py-3 text-center text-sm font-bold text-brand-500 border-b-2 border-brand-500">
+                    Log In
+                </button>
+                <button id="tabSignup" onclick="switchTab('signup')" class="flex-1 py-3 text-center text-sm font-bold text-slate-400 border-b-2 border-transparent">
+                    Create Account
+                </button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleAuthSubmit(event, 'Login')" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="you@example.com" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Password</label>
+                    <input type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-black text-sm transition-all shadow-lg shadow-brand-500/20">
+                    Log In to Service Portal &rarr;
+                </button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signupForm" onsubmit="handleAuthSubmit(event, 'Registration')" class="space-y-5 hidden">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Full Name</label>
+                    <input type="text" required placeholder="John Doe" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Email Address</label>
+                    <input type="email" id="signupEmail" required placeholder="you@example.com" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">Create Password</label>
+                    <input type="password" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-black text-sm transition-all shadow-lg shadow-brand-500/20">
+                    Create Account & Enter Portal &rarr;
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JS Scripts -->
+    <script>
+        function openAuthModal(mode) {
+            document.getElementById('authModal').classList.remove('hidden');
+            switchTab(mode);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function switchTab(mode) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const tabLogin = document.getElementById('tabLogin');
+            const tabSignup = document.getElementById('tabSignup');
+
+            if (mode === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                tabLogin.className = "flex-1 py-3 text-center text-sm font-bold text-brand-500 border-b-2 border-brand-500";
+                tabSignup.className = "flex-1 py-3 text-center text-sm font-bold text-slate-400 border-b-2 border-transparent";
+            } else {
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+                tabSignup.className = "flex-1 py-3 text-center text-sm font-bold text-brand-500 border-b-2 border-brand-500";
+                tabLogin.className = "flex-1 py-3 text-center text-sm font-bold text-slate-400 border-b-2 border-transparent";
+            }
+        }
+
+        function handleAuthSubmit(event, type) {
+            event.preventDefault();
+            const email = type === 'Login' ? document.getElementById('loginEmail').value : document.getElementById('signupEmail').value;
+            // Store email in session to display security alert on dashboard
+            sessionStorage.setItem('userEmail', email);
+            sessionStorage.setItem('authType', type);
+            window.location.href = "dashboard.html";
+        }
+    </script>
+</body>
+</html>

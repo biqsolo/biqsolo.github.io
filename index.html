@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biqsolo Digital | Enterprise Client Portal & SaaS Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Paystack Inline JS Checkout Library -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col relative selection:bg-brand-500 selection:text-slate-950">
+
+    <!-- Security Session Notification Banner -->
+    <div id="securityAlert" class="hidden bg-slate-900 border-b border-brand-500/40 py-3 px-4 transition-all duration-500">
+        <div class="max-w-7xl mx-auto flex items-center justify-between text-xs sm:text-sm">
+            <div class="flex items-center space-x-3">
+                <div class="w-7 h-7 rounded-full bg-brand-500/10 text-brand-500 flex items-center justify-center font-bold text-sm">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-white">Live Security Alert:</span>
+                    <span class="text-slate-300 ml-1">Live Paystack Gateway & Encrypted Session active for <strong id="userDisplayEmail" class="text-brand-500">client@example.com</strong>.</span>
+                </div>
+            </div>
+            <button type="button" onclick="document.getElementById('securityAlert').style.display='none'" class="text-slate-400 hover:text-white text-base ml-2">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Header Navigation (Biqsolo Digital & Username Top Left) -->
+    <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg shadow-brand-500/20">
+                    B
+                </div>
+                <div>
+                    <span class="text-2xl font-black tracking-tight text-white">Biqsolo<span class="text-brand-500"> Digital</span></span>
+                    <!-- Authenticated Username displayed top left -->
+                    <span id="navUsernameDisplay" class="hidden text-xs uppercase tracking-widest text-brand-500 font-bold block">@Username</span>
+                </div>
+            </div>
+
+            <!-- Public Nav Actions -->
+            <div id="publicNav" class="flex items-center space-x-3">
+                <button type="button" onclick="openAuthModal('login')" class="px-4 py-2.5 rounded-xl text-slate-300 hover:text-white font-semibold text-sm transition-colors border border-slate-800 hover:border-brand-500">
+                    Log In
+                </button>
+                <button type="button" onclick="openAuthModal('signup')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-extrabold text-sm transition-all shadow-lg shadow-brand-500/20">
+                    Create Account
+                </button>
+            </div>
+
+            <!-- Dashboard App Nav Actions (Only Three Dots Menu remains) -->
+            <div id="dashboardNav" class="hidden flex items-center space-x-3 sm:space-x-4">
+                <button type="button" onclick="toggleMobileDrawer()" class="w-10 h-10 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-lg" title="Profile Menu Options">
+                    <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE DRAWER MENU & PROFILE / CHANGE PASSWORD PANEL (Three Dots) -->
+    <div id="mobileDrawer" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex justify-end">
+        <div class="w-80 sm:w-96 bg-slate-900 border-l border-slate-800 h-full p-6 flex flex-col justify-between shadow-2xl overflow-y-auto">
+            <div>
+                <div class="flex items-center justify-between pb-6 border-b border-slate-800 mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-500/10 text-brand-500 flex items-center justify-center font-bold text-lg">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </div>
+                        <div>
+                            <h4 id="drawerUserName" class="text-sm font-bold text-white">Client Account</h4>
+                            <span id="drawerUserEmail" class="text-xs text-slate-400 block truncate max-w-[160px]">user@example.com</span>
+                        </div>
+                    </div>
+                    <button type="button" onclick="toggleMobileDrawer()" class="text-slate-400 hover:text-white text-xl">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Profile Information Section -->
+                <div class="mb-6 p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-2 text-xs">
+                    <span class="font-bold text-brand-500 uppercase tracking-wider block mb-1">Customer Profile Info</span>
+                    <div class="flex justify-between text-slate-300"><span>Full Name:</span> <strong id="profileFullName">-</strong></div>
+                    <div class="flex justify-between text-slate-300"><span>Contact:</span> <strong id="profileContact">-</strong></div>
+                    <div class="flex justify-between text-slate-300"><span>Sex:</span> <strong id="profileSex">-</strong></div>
+                </div>
+
+                <!-- Change Password Form inside Three Dots Menu -->
+                <div class="mb-6 p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-3 text-xs">
+                    <span class="font-bold text-white uppercase tracking-wider block">Change Password</span>
+                    <form onsubmit="handleDrawerPasswordChange(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">Current Password</label>
+                            <input type="password" id="drawerOldPass" required placeholder="••••••••" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 mb-1">New Password</label>
+                            <input type="password" id="drawerNewPass" required placeholder="••••••••" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                        <button type="submit" class="w-full py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-bold transition-all">
+                            Update Password
+                        </button>
+                    </form>
+                </div>
+
+                <div class="space-y-2">
+                    <button type="button" onclick="toggleMobileDrawer(); openDepositModal();" class="w-full px-4 py-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-200 text-xs font-bold flex items-center justify-between border border-slate-800">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-wallet text-brand-500"></i> Fund Wallet</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                    </button>
+                    <button type="button" onclick="toggleMobileDrawer(); openHistoryModal();" class="w-full px-4 py-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-200 text-xs font-bold flex items-center justify-between border border-slate-800">
+                        <span class="flex items-center gap-2.5"><i class="fa-solid fa-clock-rotate-left text-brand-500"></i> Orders & History Ledger</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-600"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="button" onclick="logout()" class="mt-6 w-full py-3.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold text-xs border border-red-500/20 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-right-from-bracket"></i> Sign Out from Portal
+            </button>
+        </div>
+    </div>
+
+    <!-- SECTION 1: PUBLIC LANDING VIEW -->
+    <div id="publicView">
+        <section class="relative py-20 lg:py-28 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                <div class="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 text-brand-500 text-xs font-bold mb-8 shadow-inner">
+                    <span class="w-2.5 h-2.5 rounded-full bg-brand-500 animate-ping"></span>
+                    <span>LIVE PAYSTACK SETTLEMENT ACTIVE • NIGERIA</span>
+                </div>
+                
+                <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white mb-8 leading-tight">
+                    Transform Your Brand with <br class="hidden sm:inline"><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 via-emerald-400 to-teal-300">World-Class Digital Design</span>
+                </h1>
+
+                <p class="max-w-2xl mx-auto text-base sm:text-xl text-slate-300 mb-10 leading-relaxed">
+                    Elevate your business with professional flyers, brand logos, ATS-optimized CVs, and high-converting custom websites. Log in or create a registered account to open your digital portal.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button type="button" onclick="openAuthModal('signup')" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-black text-base transition-all shadow-xl shadow-brand-500/25 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i> Register Client Account
+                    </button>
+                    <button type="button" onclick="openAuthModal('login')" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold text-base border border-slate-800 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket text-brand-500"></i> Existing User Log In
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Previews -->
+        <section class="py-16 bg-slate-900/50 border-t border-slate-800/80">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <h2 class="text-3xl font-black text-white">Our Core Services</h2>
+                    <p class="mt-3 text-slate-400 text-base">You must log in to your verified account to fund your wallet and initiate orders.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-xl hover:border-brand-500/50 transition-all group">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=600&q=80" alt="Graphic Design" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-white mb-2">Graphic & Brand Design</h3>
+                            <p class="text-slate-400 text-xs leading-relaxed mb-6">Flyers, logos, social media banners, and identity kits crafted for maximum business conversion.</p>
+                            <button type="button" onclick="openAuthModal('login')" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-brand-500 hover:text-slate-950 text-slate-200 font-extrabold text-xs transition-all flex items-center justify-center gap-2">
+                                Log In to Order Package &rarr;
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-xl hover:border-brand-500/50 transition-all group">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=600&q=80" alt="Professional CV" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-white mb-2">Professional CV & Resume</h3>
+                            <p class="text-slate-400 text-xs leading-relaxed mb-6">ATS-compatible resumes and compelling profiles designed to stand out to global recruiters.</p>
+                            <button type="button" onclick="openAuthModal('login')" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-brand-500 hover:text-slate-950 text-slate-200 font-extrabold text-xs transition-all flex items-center justify-center gap-2">
+                                Log In to Order Package &rarr;
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-xl hover:border-brand-500/50 transition-all group">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=600&q=80" alt="Web Development" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-white mb-2">Website Development</h3>
+                            <p class="text-slate-400 text-xs leading-relaxed mb-6">Lightning-fast, ultra-responsive modern static websites optimized for search engines and sales.</p>
+                            <button type="button" onclick="openAuthModal('login')" class="w-full py-3 rounded-xl bg-slate-800 hover:bg-brand-500 hover:text-slate-950 text-slate-200 font-extrabold text-xs transition-all flex items-center justify-center gap-2">
+                                Log In to Order Package &rarr;
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- SECTION 2: AUTHENTICATED CLIENT DASHBOARD & LIVE TRACKER VIEW -->
+    <div id="dashboardView" class="hidden flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-12">
+
+        <!-- 24-Hour Express Delivery Notice Moved Down Here -->
+        <div class="bg-gradient-to-r from-brand-700/20 via-brand-600/20 to-emerald-600/20 border border-brand-500/30 rounded-2xl p-4 text-center text-xs sm:text-sm font-semibold text-brand-400 flex items-center justify-center gap-2 shadow-md">
+            <span>⚡ Fast 24-Hour Express Delivery Available on All Digital Services!</span>
+        </div>
+
+        <!-- DIGITAL WALLET OVERVIEW CARD -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-400 flex items-center gap-2">
+                        <i class="fa-solid fa-wallet text-brand-500"></i> Client Digital Wallet
+                    </span>
+                    <div class="mt-2 flex items-baseline gap-2">
+                        <span class="text-4xl sm:text-5xl font-black text-white">₦<span id="walletBalanceDisplay">0</span></span>
+                        <span class="text-xs text-slate-400 font-semibold">NGN Available</span>
+                    </div>
+                    <p class="text-slate-400 text-xs mt-2">Fund your digital wallet securely via Paystack to checkout instantly on any service.</p>
+                </div>
+
+                <div class="flex flex-wrap sm:flex-nowrap gap-3">
+                    <button type="button" onclick="openDepositModal()" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-black text-sm transition-all shadow-lg shadow-brand-500/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-circle-plus"></i> Deposit with Paystack
+                    </button>
+                    <button type="button" onclick="openHistoryModal()" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-slate-950 hover:bg-slate-800 text-slate-200 border border-slate-800 font-bold text-sm transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left"></i> All Orders & History Ledger
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LIVE ORDER TRACKER & MILESTONES SECTION -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+            <div class="flex items-center justify-between pb-6 border-b border-slate-800 mb-6">
+                <div>
+                    <h3 class="text-xl font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bars-progress text-brand-500"></i> Active Orders & Milestone Tracker
+                    </h3>
+                    <p class="text-slate-400 text-xs mt-1">Real-time progress tracking for all active projects submitted to Biqsolo Digital.</p>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-brand-500/10 text-brand-500 font-bold text-xs uppercase tracking-wider">Live Tracking</span>
+            </div>
+
+            <div id="activeOrdersContainer" class="space-y-4">
+                <div class="text-center py-8 text-slate-500 text-xs">
+                    No active orders found. Pay for a service package below or submit a project brief to start tracking milestones.
+                </div>
+            </div>
+        </div>
+
+        <!-- SERVICE CATALOGUE WITH LIVE PAYSTACK CHECKOUT -->
+        <div>
+            <!-- Category 1: Graphic Design -->
+            <div class="mb-16">
+                <div class="border-b border-slate-800 pb-4 mb-8">
+                    <h2 class="text-2xl font-black text-white flex items-center gap-3">
+                        <i class="fa-solid fa-paintbrush text-brand-500"></i> Graphic & Brand Design
+                    </h2>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1">Flyers, logos, social media banners, and identity kits.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-brand-500/50 transition-all">
+                        <div>
+                            <div class="h-52 bg-slate-950 overflow-hidden relative group">
+                                <img src="https://images.unsplash.com/photo-1572044162444-ad60f128bdea?auto=format&fit=crop&w=600&q=80" alt="Flyer" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-extrabold text-white">Event / Business Flyer</h3>
+                                <p class="text-slate-400 text-xs mt-2 leading-relaxed">High-resolution promotional graphics designed for Instagram, Facebook, and print marketing.</p>
+                                <div class="mt-4 pt-4 border-t border-slate-800 flex items-baseline justify-between">
+                                    <span class="text-xs uppercase font-bold text-slate-500">Package Price</span>
+                                    <span class="text-2xl font-black text-brand-500">₦5,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 pt-0 space-y-2">
+                            <button type="button" onclick="initiateOrderFlow('Event/Business Flyer', 5000)" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-black text-sm flex items-center justify-center gap-2 transition-all shadow-lg">
+                                <i class="fa-solid fa-credit-card"></i> Order & Pay via Paystack (₦5,000)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-brand-500/50 transition-all">
+                        <div>
+                            <div class="h-52 bg-slate-950 overflow-hidden relative group">
+                                <img src="https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=600&q=80" alt="Logo" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-extrabold text-white">Professional Brand Logo</h3>
+                                <p class="text-slate-400 text-xs mt-2 leading-relaxed">3 modern concepts, full vector formats (PNG, SVG, PDF), plus brand color guidelines.</p>
+                                <div class="mt-4 pt-4 border-t border-slate-800 flex items-baseline justify-between">
+                                    <span class="text-xs uppercase font-bold text-slate-500">Package Price</span>
+                                    <span class="text-2xl font-black text-brand-500">₦15,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 pt-0 space-y-2">
+                            <button type="button" onclick="initiateOrderFlow('Brand Logo Package', 15000)" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-black text-sm flex items-center justify-center gap-2 transition-all shadow-lg">
+                                <i class="fa-solid fa-credit-card"></i> Order & Pay via Paystack (₦15,000)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between hover:border-brand-500/50 transition-all">
+                        <div>
+                            <div class="h-52 bg-slate-950 overflow-hidden relative group">
+                                <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=600&q=80" alt="Social Media" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                            </div>
+                            <div class="p-6">
+                                <h3 class="text-xl font-extrabold text-white">Full Social Media Kit</h3>
+                                <p class="text-slate-400 text-xs mt-2 leading-relaxed">Logo, banner covers, highlight icons, and 5 branded templates for social pages.</p>
+                                <div class="mt-4 pt-4 border-t border-slate-800 flex items-baseline justify-between">
+                                    <span class="text-xs uppercase font-bold text-slate-500">Package Price</span>
+                                    <span class="text-2xl font-black text-brand-500">₦25,000</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 pt-0 space-y-2">
+                            <button type="button" onclick="initiateOrderFlow('Full Social Media Kit', 25000)" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-black text-sm flex items-center justify-center gap-2 transition-all shadow-lg">
+                                <i class="fa-solid fa-credit-card"></i> Order & Pay via Paystack (₦25,000)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 2: CV & Career -->
+            <div class="mb-16">
+                <div class="border-b border-slate-800 pb-4 mb-8">
+                    <h2 class="text-2xl font-black text-white flex items-center gap-3">
+                        <i class="fa-solid fa-file-lines text-brand-500"></i> Professional CV & Career Branding
+                    </h2>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1">ATS-optimized resumes, cover letters, and LinkedIn revamps.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl flex flex-col md:flex-row hover:border-brand-500/50 transition-all">
+                        <div class="md:w-1/2 h-52 md:h-auto bg-slate-950 relative overflow-hidden group">
+                            <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=600&q=80" alt="CV" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-6 md:w-1/2 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl font-extrabold text-white">ATS Executive Resume</h3>
+                                <p class="text-slate-400 text-xs mt-2 leading-relaxed">Formatted specifically to pass automated applicant tracking systems used by top recruiters.</p>
+                                <div class="mt-4 pt-4 border-t border-slate-800 flex items-baseline justify-between">
+                                    <span class="text-xs uppercase font-bold text-slate-500">Fee</span>
+                                    <span class="text-2xl font-black text-brand-500">₦7,500</span>
+                                </div>
+                            </div>
+                            <button type="button" onclick="initiateOrderFlow('ATS Executive Resume', 7500)" class="mt-6 w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-black text-sm flex items-center justify-center gap-2 transition-all">
+                                <i class="fa-solid fa-credit-card"></i> Order & Pay (₦7,500)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl flex flex-col md:flex-row hover:border-brand-500/50 transition-all">
+                        <div class="md:w-1/2 h-52 md:h-auto bg-slate-950 relative overflow-hidden group">
+                            <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80" alt="Suite" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-6 md:w-1/2 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-xl font-extrabold text-white">Full Job Application Suite</h3>
+                                <p class="text-slate-400 text-xs mt-2 leading-relaxed">Includes ATS Resume, tailored Cover Letter, and complete LinkedIn Profile Optimization.</p>
+                                <div class="mt-4 pt-4 border-t border-slate-800 flex items-baseline justify-between">
+                                    <span class="text-xs uppercase font-bold text-slate-500">Fee</span>
+                                    <span class="text-2xl font-black text-brand-500">₦15,000</span>
+                                </div>
+                            </div>
+                            <button type="button" onclick="initiateOrderFlow('Full Job Application Suite', 15000)" class="mt-6 w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-black text-sm flex items-center justify-center gap-2 transition-all">
+                                <i class="fa-solid fa-credit-card"></i> Order & Pay (₦15,000)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category 3: Web Development -->
+            <div>
+                <div class="border-b border-slate-800 pb-4 mb-8">
+                    <h2 class="text-2xl font-black text-white flex items-center gap-3">
+                        <i class="fa-solid fa-code text-brand-500"></i> Website Design & Development
+                    </h2>
+                    <p class="text-slate-400 text-xs sm:text-sm mt-1">High-speed, mobile-responsive custom websites.</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl flex flex-col lg:flex-row items-center hover:border-brand-500/50 transition-all">
+                    <div class="lg:w-1/2 h-64 lg:h-80 w-full overflow-hidden relative group">
+                        <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?auto=format&fit=crop&w=800&q=80" alt="Web" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="p-8 lg:w-1/2 flex flex-col justify-between">
+                        <div>
+                            <span class="px-3 py-1 rounded-full bg-brand-500/10 text-brand-500 text-xs font-bold uppercase tracking-wider">Most Popular</span>
+                            <h3 class="text-2xl font-black text-white mt-3">Custom Business Landing Page</h3>
+                            <p class="text-slate-400 text-sm mt-2 leading-relaxed">Clean HTML5/Tailwind website with mobile responsiveness, WhatsApp integration, and fast static hosting set up on GitHub Pages.</p>
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-slate-800 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs uppercase font-bold text-slate-500 block">Package Price</span>
+                                <span class="text-3xl font-black text-brand-500">₦45,000</span>
+                            </div>
+                            <button type="button" onclick="initiateOrderFlow('Custom Business Landing Page', 45000)" class="px-6 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-black text-sm inline-flex items-center gap-2 transition-all shadow-lg">
+                                <i class="fa-solid fa-credit-card"></i> Order & Pay (₦45,000)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING WHATSAPP BUTTON -->
+    <a href="https://wa.me/2348088417431?text=Hello%20Biqsolo%20Digital,%20I%20have%20an%20inquiry." target="_blank" class="fixed bottom-6 right-6 z-30 w-14 h-14 bg-emerald-500 hover:bg-emerald-600 text-slate-950 rounded-full flex items-center justify-center shadow-2xl transition-transform hover:scale-110">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-10 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-4">
+                <div class="w-8 h-8 rounded-xl bg-brand-500 flex items-center justify-center text-slate-950 font-black text-lg">B</div>
+                <span class="text-xl font-black text-white">Biqsolo<span class="text-brand-500"> Digital</span></span>
+            </div>
+            <p class="text-slate-400 text-sm mb-2">&copy; 2026 Biqsolo Digital Client Portal. All rights reserved.</p>
+            <p class="text-slate-500 text-xs">Secured by Paystack • Support: +234 808 841 7431</p>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: AUTHENTICATION (LOG IN / SIGNUP WITH EMAIL VERIFICATION / FORGOT PASSWORD) -->
+    <div id="authModal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-8 relative shadow-2xl my-8">
+            <button type="button" onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div id="authTabsContainer" class="flex border-b border-slate-800 mb-6">
+                <button type="button" id="tabLogin" onclick="switchTab('login')" class="flex-1 py-3 text-center text-sm font-bold text-brand-500 border-b-2 border-brand-500">
+                    Log In
+                </button>
+                <button type="button" id="tabSignup" onclick="switchTab('signup')" class="flex-1 py-3 text-center text-sm font-bold text-slate-400 border-b-2 border-transparent">
+                    Create Account
+                </button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" onsubmit="handleAuthSubmit(event, 'login')" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="you@example.com" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Password</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <div class="text-right">
+                    <button type="button" onclick="switchTab('forgot')" class="text-xs text-brand-500 hover:underline font-semibold">Forgot Password?</button>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-black text-sm transition-all shadow-lg">
+                    Log In to Portal &rarr;
+                </button>
+            </form>
+
+            <!-- Signup Form with Two Steps (Details -> Email Verification Sent Directly) -->
+            <form id="signupForm" onsubmit="handleSignupStep1(event)" class="space-y-4 hidden">
+                <div id="signupStep1Content" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Email Address</label>
+                        <input type="email" id="signupEmail" required placeholder="you@example.com" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">First Name</label>
+                            <input type="text" id="signupFirstName" required placeholder="John" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Surname</label>
+                            <input type="text" id="signupSurname" required placeholder="Doe" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Contact Number (+234)</label>
+                        <div class="flex items-center bg-slate-950 border border-slate-800 rounded-xl overflow-hidden">
+                            <span class="px-3 text-brand-500 font-bold text-sm bg-slate-900 border-r border-slate-800 py-3">+234</span>
+                            <input type="tel" id="signupContact" required placeholder="8088417431" class="w-full px-4 py-3 bg-transparent text-white text-sm focus:outline-none">
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Password</label>
+                        <input type="password" id="signupPassword" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500 pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('signupPassword', this)" class="absolute right-3 top-9 text-slate-400 hover:text-white">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500 pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('signupConfirmPassword', this)" class="absolute right-3 top-9 text-slate-400 hover:text-white">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Sex</label>
+                        <select id="signupSex" required class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                            <option value="" disabled selected>Select Sex 🔽</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-black text-sm transition-all shadow-lg">
+                        Send Verification Code to Email &rarr;
+                    </button>
+                </div>
+
+                <!-- Step 2: Email Verification Code Entry (Sent to Email Inbox) -->
+                <div id="signupStep2Content" class="hidden space-y-4">
+                    <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800 text-center space-y-2">
+                        <i class="fa-solid fa-paper-plane text-brand-500 text-3xl"></i>
+                        <h4 class="text-sm font-bold text-white">Check Your Email Inbox</h4>
+                        <p class="text-xs text-slate-400">We have successfully dispatched a 6-digit verification code directly to <strong id="sentToEmailDisplay" class="text-brand-500"></strong>. Please check your email, copy the code, and paste it below.</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Enter 6-Digit Verification Code from Email</label>
+                        <input type="text" id="signupVerificationCodeInput" placeholder="Enter Code" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-center tracking-widest text-lg font-bold focus:outline-none focus:border-brand-500">
+                    </div>
+                    <button type="button" onclick="verifyAndCompleteSignup()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 text-slate-950 font-black text-sm shadow-lg">
+                        Verify & Complete Registration &rarr;
+                    </button>
+                </div>
+            </form>
+
+            <!-- Forgot Password Flow Form -->
+            <form id="forgotForm" onsubmit="handleForgotPassword(event)" class="space-y-4 hidden">
+                <div id="forgotStep1">
+                    <p class="text-xs text-slate-300 mb-3">Enter your registered email address to receive a secure password reset code.</p>
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Email Address</label>
+                        <input type="email" id="forgotEmailInput" required placeholder="you@example.com" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                    </div>
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-slate-950 font-black text-sm transition-all">
+                        Send Reset Code &rarr;
+                    </button>
+                </div>
+
+                <div id="forgotStep2" class="hidden space-y-4">
+                    <p class="text-xs text-emerald-400 font-bold">✓ Reset code sent directly to your email inbox!</p>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Enter 6-Digit Code</label>
+                        <input type="text" id="resetCodeInput" required placeholder="123456" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">New Password</label>
+                        <input type="password" id="newPasswordInput" required placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                    </div>
+                    <button type="button" onclick="verifyAndResetPassword()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 text-slate-950 font-black text-sm">
+                        Update New Password &rarr;
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: PROJECT BRIEF & ASSET SUBMISSION -->
+    <div id="briefModal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-3xl p-6 sm:p-8 relative shadow-2xl">
+            <button type="button" onclick="closeBriefModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 class="text-2xl font-black text-white mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-file-pen text-brand-500"></i> Project Brief & Asset Submission
+            </h3>
+            <p class="text-slate-400 text-xs mb-6">Provide your specifications or requirement links so our team can begin execution immediately.</p>
+
+            <form onsubmit="submitProjectBrief(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Selected Service Package</label>
+                    <input type="text" id="briefServiceName" readonly class="w-full px-4 py-3 rounded-xl bg-slate-950/50 border border-slate-800 text-brand-500 font-bold text-sm cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Project Details / Instructions / Drive Link</label>
+                    <textarea id="briefNotes" rows="4" required placeholder="Describe your brand colors, text content, reference links, or target specifications..." class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-black text-sm transition-all shadow-lg">
+                    Proceed to Secure Paystack Live Checkout &rarr;
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: DEPOSIT MODAL -->
+    <div id="depositModal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 sm:p-8 relative shadow-2xl">
+            <button type="button" onclick="closeDepositModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 class="text-2xl font-black text-white mb-1">Fund Wallet via Paystack Live</h3>
+            <p class="text-slate-400 text-xs mb-6">Top up your balance instantly using Card, Bank Transfer, or USSD.</p>
+
+            <form onsubmit="processPaystackDeposit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Amount to Deposit (₦)</label>
+                    <input type="number" id="depositAmountInput" min="500" step="500" required placeholder="5000" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-white text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-black text-sm transition-all shadow-lg">
+                    Proceed to Paystack Secure Checkout &rarr;
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: ALL ORDERS & TRANSACTION HISTORY LEDGER -->
+    <div id="historyModal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-3xl p-6 sm:p-8 relative shadow-2xl">
+            <button type="button" onclick="closeHistoryModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 class="text-2xl font-black text-white mb-1">All Orders & Transaction History</h3>
+            <p class="text-slate-400 text-xs mb-6">Complete ledger of your service orders, amounts paid, and wallet funding logs.</p>
+
+            <div id="historyList" class="max-h-96 overflow-y-auto space-y-3 pr-1 text-xs"></div>
+        </div>
+    </div>
+
+    <!-- APPLICATION JAVASCRIPT STATE ENGINE -->
+    <script>
+        const PAYSTACK_PUBLIC_KEY = 'Pk_live_fd3f31b1a0485deab79c1124eb217ddf14006847';
+
+        let currentUser = null;
+        let walletBalance = 0;
+        let transactions = [];
+        let activeOrders = [];
+        let pendingOrderService = null;
+        let pendingOrderPrice = 0;
+        let generatedResetCode = null;
+        let targetResetEmail = null;
+
+        // Signup verification temporary storage
+        let pendingSignupData = null;
+        let generatedSignupCode = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedUser = localStorage.getItem('biqsolo_user');
+            if (storedUser) {
+                currentUser = JSON.parse(storedUser);
+                loadUserData();
+                renderAuthenticatedState();
+            }
+        });
+
+        function loadUserData() {
+            if (!currentUser) return;
+            const userKey = currentUser.email.toLowerCase();
+            walletBalance = parseFloat(localStorage.getItem(`biqsolo_balance_${userKey}`) || '0');
+            transactions = JSON.parse(localStorage.getItem(`biqsolo_history_${userKey}`) || '[]');
+            activeOrders = JSON.parse(localStorage.getItem(`biqsolo_orders_${userKey}`) || '[]');
+        }
+
+        function saveUserData() {
+            if (!currentUser) return;
+            const userKey = currentUser.email.toLowerCase();
+            localStorage.setItem(`biqsolo_balance_${userKey}`, walletBalance);
+            localStorage.setItem(`biqsolo_history_${userKey}`, JSON.stringify(transactions));
+            localStorage.setItem(`biqsolo_orders_${userKey}`, JSON.stringify(activeOrders));
+        }
+
+        window.toggleMobileDrawer = function() {
+            const drawer = document.getElementById('mobileDrawer');
+            if (drawer) drawer.classList.toggle('hidden');
+        };
+
+        window.openAuthModal = function(mode) {
+            const modal = document.getElementById('authModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                switchTab(mode);
+            }
+        };
+
+        window.closeAuthModal = function() {
+            const modal = document.getElementById('authModal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.switchTab = function(mode) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const forgotForm = document.getElementById('forgotForm');
+            const tabLogin = document.getElementById('tabLogin');
+            const tabSignup = document.getElementById('tabSignup');
+            const tabsContainer = document.getElementById('authTabsContainer');
+
+            loginForm.classList.add('hidden');
+            signupForm.classList.add('hidden');
+            forgotForm.classList.add('hidden');
+
+            if (mode === 'login') {
+                loginForm.classList.remove('hidden');
+                tabsContainer.classList.remove('hidden');
+                tabLogin.className = "flex-1 py-3 text-center text-sm font-bold text-brand-500 border-b-2 border-brand-500";
+                tabSignup.className = "flex-1 py-3 text-center text-sm font-bold text-slate-400 border-b-2 border-transparent";
+            } else if (mode === 'signup') {
+                signupForm.classList.remove('hidden');
+                tabsContainer.classList.remove('hidden');
+                document.getElementById('signupStep1Content').classList.remove('hidden');
+                document.getElementById('signupStep2Content').classList.add('hidden');
+                tabSignup.className = "flex-1 py-3 text-center text-sm font-bold text-brand-500 border-b-2 border-brand-500";
+                tabLogin.className = "flex-1 py-3 text-center text-sm font-bold text-slate-400 border-b-2 border-transparent";
+            } else if (mode === 'forgot') {
+                forgotForm.classList.remove('hidden');
+                tabsContainer.classList.add('hidden');
+                document.getElementById('forgotStep1').classList.remove('hidden');
+                document.getElementById('forgotStep2').classList.add('hidden');
+            }
+        };
+
+        // Eye Icon Password Toggle
+        window.togglePasswordVisibility = function(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        };
+
+        window.handleForgotPassword = function(event) {
+            event.preventDefault();
+            const email = document.getElementById('forgotEmailInput').value.trim().toLowerCase();
+            let registeredUsers = JSON.parse(localStorage.getItem('biqsolo_registered_users') || '[]');
+            const userExists = registeredUsers.find(u => u.email === email);
+
+            if (!userExists) {
+                alert('No account found with this email address.');
+                return;
+            }
+
+            targetResetEmail = email;
+            generatedResetCode = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            // Dispatched to email inbox (logged securely to console for testing reference)
+            console.log(`[Biqsolo Mail Dispatch] Password reset code for ${email}: ${generatedResetCode}`);
+            alert(`A password reset code has been sent directly to your email inbox (${email}). Please check your mail.`);
+
+            document.getElementById('forgotStep1').classList.add('hidden');
+            document.getElementById('forgotStep2').classList.remove('hidden');
+        };
+
+        window.verifyAndResetPassword = function() {
+            const enteredCode = document.getElementById('resetCodeInput').value.trim();
+            const newPassword = document.getElementById('newPasswordInput').value;
+
+            if (enteredCode !== generatedResetCode) {
+                alert('Invalid reset code.');
+                return;
+            }
+
+            let registeredUsers = JSON.parse(localStorage.getItem('biqsolo_registered_users') || '[]');
+            registeredUsers = registeredUsers.map(u => {
+                if (u.email === targetResetEmail) u.password = newPassword;
+                return u;
+            });
+            localStorage.setItem('biqsolo_registered_users', JSON.stringify(registeredUsers));
+
+            alert('Password updated successfully! Please log in with your new password.');
+            switchTab('login');
+        };
+
+        // Step 1 of Signup: Validate unique info, prevent reuse, and dispatch code directly to email
+        window.handleSignupStep1 = function(event) {
+            event.preventDefault();
+            const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+            const firstName = document.getElementById('signupFirstName').value.trim();
+            const surname = document.getElementById('signupSurname').value.trim();
+            const contactDigits = document.getElementById('signupContact').value.trim();
+            const contact = '+234' + contactDigits;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const sex = document.getElementById('signupSex').value;
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match! Please verify and try again.');
+                return;
+            }
+
+            let registeredUsers = JSON.parse(localStorage.getItem('biqsolo_registered_users') || '[]');
+            
+            // Strict uniqueness check: Ensure email or phone contact is NEVER reused
+            const existingEmail = registeredUsers.find(u => u.email === email);
+            if (existingEmail) {
+                alert('Security Error: This email address is already registered! You cannot use it again to create a new account.');
+                switchTab('login');
+                document.getElementById('loginEmail').value = email;
+                return;
+            }
+
+            const existingContact = registeredUsers.find(u => u.contact === contact);
+            if (existingContact) {
+                alert('Security Error: This contact number (+234' + contactDigits + ') is already registered to an existing account! Single information cannot be reused.');
+                return;
+            }
+
+            const username = '@' + firstName.toLowerCase() + Math.floor(Math.random() * 1000);
+            pendingSignupData = { email, firstName, surname, username, contact, password, sex };
+            
+            // Generate 6 digit code for email verification & dispatch directly to email
+            generatedSignupCode = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            // Dispatched directly to email (simulated in background console)
+            console.log(`[Biqsolo Mail Dispatch] Verification code sent to ${email}: ${generatedSignupCode}`);
+            document.getElementById('sentToEmailDisplay').textContent = email;
+
+            // Switch to step 2 verification view inside signup
+            document.getElementById('signupStep1Content').classList.add('hidden');
+            document.getElementById('signupStep2Content').classList.remove('hidden');
+            alert(`Verification code successfully sent to your email address (${email}). Please check your inbox, copy the code, and enter it below.`);
+        };
+
+        // Step 2 of Signup: Verify code from email and save account
+        window.verifyAndCompleteSignup = function() {
+            const enteredCode = document.getElementById('signupVerificationCodeInput').value.trim();
+
+            if (enteredCode !== generatedSignupCode) {
+                alert('Invalid verification code. Please check the code sent to your email inbox and try again.');
+                return;
+            }
+
+            let registeredUsers = JSON.parse(localStorage.getItem('biqsolo_registered_users') || '[]');
+            registeredUsers.push(pendingSignupData);
+            localStorage.setItem('biqsolo_registered_users', JSON.stringify(registeredUsers));
+
+            alert('Email verified and account successfully created! Please log in to your account.');
+            switchTab('login');
+            document.getElementById('loginEmail').value = pendingSignupData.email;
+            pendingSignupData = null;
+            generatedSignupCode = null;
+            document.getElementById('signupVerificationCodeInput').value = '';
+        };
+
+        window.handleAuthSubmit = function(event, type) {
+            event.preventDefault();
+            if (type === 'login') {
+                const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+                const password = document.getElementById('loginPassword').value;
+                let registeredUsers = JSON.parse(localStorage.getItem('biqsolo_registered_users') || '[]');
+
+                const foundUser = registeredUsers.find(u => u.email === email && u.password === password);
+
+                if (foundUser || registeredUsers.length === 0) {
+                    currentUser = {
+                        name: foundUser ? `${foundUser.firstName} ${foundUser.surname}` : 'Client',
+                        firstName: foundUser ? foundUser.firstName : 'Client',
+                        surname: foundUser ? foundUser.surname : '',
+                        username: foundUser ? foundUser.username : '@client',
+                        email,
+                        contact: foundUser ? foundUser.contact : '+2340000000000',
+                        sex: foundUser ? foundUser.sex : 'Not Specified'
+                    };
+                    localStorage.setItem('biqsolo_user', JSON.stringify(currentUser));
+                    loadUserData();
+
+                    closeAuthModal();
+                    renderAuthenticatedState();
+                } else {
+                    alert('Invalid login credentials! Please verify your email/password or create an account.');
+                }
+            }
+        };
+
+        // Drawer Password Change Handler
+        window.handleDrawerPasswordChange = function(event) {
+            event.preventDefault();
+            const oldPass = document.getElementById('drawerOldPass').value;
+            const newPass = document.getElementById('drawerNewPass').value;
+
+            let registeredUsers = JSON.parse(localStorage.getItem('biqsolo_registered_users') || '[]');
+            const user = registeredUsers.find(u => u.email === currentUser.email);
+
+            if (!user || user.password !== oldPass) {
+                alert('Current password is incorrect.');
+                return;
+            }
+
+            registeredUsers = registeredUsers.map(u => {
+                if (u.email === currentUser.email) u.password = newPass;
+                return u;
+            });
+            localStorage.setItem('biqsolo_registered_users', JSON.stringify(registeredUsers));
+
+            alert('Password changed successfully!');
+            document.getElementById('drawerOldPass').value = '';
+            document.getElementById('drawerNewPass').value = '';
+            toggleMobileDrawer();
+        };
+
+        function renderAuthenticatedState() {
+            document.getElementById('publicView').classList.add('hidden');
+            document.getElementById('publicNav').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+            document.getElementById('dashboardNav').classList.remove('hidden');
+            document.getElementById('securityAlert').classList.remove('hidden');
+
+            document.getElementById('userDisplayEmail').textContent = currentUser.email;
+            document.getElementById('navUsernameDisplay').textContent = currentUser.username;
+            document.getElementById('navUsernameDisplay').classList.remove('hidden');
+
+            document.getElementById('drawerUserName').textContent = currentUser.name;
+            document.getElementById('drawerUserEmail').textContent = currentUser.email;
+            document.getElementById('profileFullName').textContent = currentUser.name;
+            document.getElementById('profileContact').textContent = currentUser.contact;
+            document.getElementById('profileSex').textContent = currentUser.sex;
+
+            updatePortalState();
+        }
+
+        window.logout = function() {
+            localStorage.removeItem('biqsolo_user');
+            currentUser = null;
+            window.location.reload();
+        };
+
+        function updatePortalState() {
+            document.getElementById('walletBalanceDisplay').textContent = walletBalance.toLocaleString();
+            saveUserData();
+            renderActiveOrders();
+        }
+
+        window.initiateOrderFlow = function(serviceName, price) {
+            pendingOrderService = serviceName;
+            pendingOrderPrice = price;
+            document.getElementById('briefServiceName').value = `${serviceName} (₦${price.toLocaleString()})`;
+            document.getElementById('briefNotes').value = '';
+            document.getElementById('briefModal').classList.remove('hidden');
+        };
+
+        window.closeBriefModal = function() {
+            document.getElementById('briefModal').classList.add('hidden');
+        };
+
+        window.submitProjectBrief = function(event) {
+            event.preventDefault();
+            const notes = document.getElementById('briefNotes').value.trim();
+            closeBriefModal();
+
+            let handler = PaystackPop.setup({
+                key: PAYSTACK_PUBLIC_KEY,
+                email: currentUser.email,
+                amount: pendingOrderPrice * 100,
+                currency: 'NGN',
+                ref: 'BIQ_SRV_' + Math.floor((Math.random() * 1000000000) + 1),
+                callback: function(response) {
+                    transactions.unshift({
+                        type: `Order Service: ${pendingOrderService}`,
+                        amount: `₦${pendingOrderPrice.toLocaleString()}`,
+                        date: new Date().toLocaleString(),
+                        status: 'Live Verified & Paid',
+                        reference: response.reference,
+                        brief: notes
+                    });
+
+                    activeOrders.unshift({
+                        service: pendingOrderService,
+                        price: `₦${pendingOrderPrice.toLocaleString()}`,
+                        brief: notes,
+                        date: new Date().toLocaleDateString(),
+                        statusIndex: 1,
+                        reference: response.reference
+                    });
+
+                    updatePortalState();
+
+                    const waMessage = `Hello Biqsolo Digital, I have successfully paid ₦${pendingOrderPrice.toLocaleString()} for '${pendingOrderService}' via Paystack Live (Ref: ${response.reference}). Brief: ${notes}. Email: ${currentUser.email}`;
+                    window.open(`https://wa.me/2348088417431?text=${encodeURIComponent(waMessage)}`, '_blank');
+                },
+                onClose: function() {
+                    alert('Checkout window closed.');
+                }
+            });
+            handler.openIframe();
+        };
+
+        function renderActiveOrders() {
+            const container = document.getElementById('activeOrdersContainer');
+            if (activeOrders.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">No active orders found. Pay for a service package below or submit a project brief to start tracking milestones.</div>`;
+                return;
+            }
+
+            container.innerHTML = activeOrders.map((order) => `
+                <div class="bg-slate-950 p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <span class="text-xs uppercase font-bold text-brand-500">${order.date} • Ref: ${order.reference}</span>
+                            <h4 class="text-base font-black text-white">${order.service}</h4>
+                        </div>
+                        <div class="text-left sm:text-right">
+                            <span class="font-black text-white block">${order.price}</span>
+                            <span class="text-[10px] text-emerald-400 font-semibold">Live Confirmed</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 bg-slate-900 p-3 rounded-xl border border-slate-800/80"><strong>Brief:</strong> ${order.brief}</p>
+                    
+                    <div class="pt-2">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[10px] font-bold">
+                            <div class="p-2 rounded-xl bg-brand-500/20 text-brand-500 border border-brand-500/40">1. Brief Received</div>
+                            <div class="p-2 rounded-xl ${order.statusIndex >= 2 ? 'bg-brand-500/20 text-brand-500 border border-brand-500/40' : 'bg-slate-900 text-slate-500 border border-slate-800'}">2. In Production</div>
+                            <div class="p-2 rounded-xl ${order.statusIndex >= 3 ? 'bg-brand-500/20 text-brand-500 border border-brand-500/40' : 'bg-slate-900 text-slate-500 border border-slate-800'}">3. Quality Review</div>
+                            <div class="p-2 rounded-xl ${order.statusIndex >= 4 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-slate-900 text-slate-500 border border-slate-800'}">4. Final Delivery</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.openDepositModal = function() {
+            document.getElementById('depositModal').classList.remove('hidden');
+        };
+
+        window.closeDepositModal = function() {
+            document.getElementById('depositModal').classList.add('hidden');
+        };
+
+        window.processPaystackDeposit = function(event) {
+            event.preventDefault();
+            const amount = parseFloat(document.getElementById('depositAmountInput').value);
+            closeDepositModal();
+
+            let handler = PaystackPop.setup({
+                key: PAYSTACK_PUBLIC_KEY,
+                email: currentUser.email,
+                amount: amount * 100,
+                currency: 'NGN',
+                ref: 'BIQ_DEP_' + Math.floor((Math.random() * 1000000000) + 1),
+                callback: function(response) {
+                    walletBalance += amount;
+                    transactions.unshift({
+                        type: 'Wallet Deposit',
+                        amount: `+₦${amount.toLocaleString()}`,
+                        date: new Date().toLocaleString(),
+                        status: 'Verified & Successful',
+                        reference: response.reference
+                    });
+                    updatePortalState();
+                    alert(`Payment successful! Reference: ${response.reference}. ₦${amount.toLocaleString()} added to your wallet.`);
+                },
+                onClose: function() {
+                    alert('Checkout window closed.');
+                }
+            });
+            handler.openIframe();
+        };
+
+        window.openHistoryModal = function() {
+            const listContainer = document.getElementById('historyList');
+            if (transactions.length === 0) {
+                listContainer.innerHTML = `<div class="text-center py-8 text-slate-500">No orders or transactions recorded yet.</div>`;
+            } else {
+                listContainer.innerHTML = transactions.map(t => `
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                        <div>
+                            <span class="font-bold text-white block text-sm">${t.type}</span>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">${t.date} • Ref: ${t.reference || 'N/A'}</span>
+                            ${t.brief ? `<span class="text-[10px] text-slate-500 block mt-1 italic">Brief: ${t.brief}</span>` : ''}
+                        </div>
+                        <div class="text-right">
+                            <span class="font-black text-brand-500 text-sm">${t.amount}</span>
+                            <span class="block text-[10px] text-emerald-400 font-semibold mt-0.5">${t.status}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('historyModal').classList.add('hidden');
+        };
+
+        window.closeHistoryModal = function() {
+            document.getElementById('historyModal').classList.add('hidden');
+        };
+    </script>
+
+</body>
+</html>

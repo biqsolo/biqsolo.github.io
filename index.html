@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biqsolo Digital | Enterprise Client Portal & SaaS Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Paystack Inline JS Checkout Library -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <!-- EmailJS SDK Integration -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            try {
+                emailjs.init({
+                    publicKey: "aIIngekmsN5ib2If5",
+                });
+            } catch(e) {
+                console.error("EmailJS init error:", e);
+            }
+        })();
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col relative selection:bg-brand-500 selection:text-slate-950">
+
+    <!-- Security Session Notification Banner -->
+    <div id="securityAlert" class="hidden bg-slate-900 border-b border-brand-500/40 py-3 px-4 transition-all duration-500">
+        <div class="max-w-7xl mx-auto flex items-center justify-between text-xs sm:text-sm">
+            <div class="flex items-center space-x-3">
+                <div class="w-7 h-7 rounded-full bg-brand-500/10 text-brand-500 flex items-center justify-center font-bold text-sm">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-white">Live Security Alert:</span>
+                    <span class="text-slate-300 ml-1">Paystack Gateway & Brevo SMTP Secured Session active for <strong id="userDisplayEmail" class="text-brand-500">client@example.com</strong>.</span>
+                </div>
+            </div>
+            <button type="button" onclick="document.getElementById('securityAlert').style.display='none'" class="text-slate-400 hover:text-white text-base ml-2">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-brand-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg shadow-brand-500/20">
+                    B
+                </div>
+                <div>
+                    <span class="text-2xl font-black tracking-tight text-white">Biqsolo<span class="text-brand-500"> Digital</span></span>
+                    <span id="navUsernameDisplay" class="hidden text-xs uppercase tracking-widest text-brand-500 font-bold block">@Username</span>
+                </div>
+            </div>
+
+            <!-- Public Nav Actions -->
+            <div id="publicNav" class="flex items-center space-x-3">
+                <button type="button" onclick="openAuthModal('login')" class="px-4 py-2.5 rounded-xl text-slate-300 hover:text-white font-semibold text-sm transition-colors border border-slate-800 hover:border-brand-500">
+                    Log In
+                </button>
+                <button type="button" onclick="openAuthModal('signup')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-emerald-500 hover:from-brand-600 hover:to-emerald-600 text-slate-950 font-extrabold text-sm transition-all shadow-lg shadow-brand-500/20">
+                    Create Account
+                </button>
+            </div>
+
+            <!-- Dashboard App Nav Actions -->
+            <div id="dashboardNav" class="hidden flex items-center space-x-3 sm:space-x-4">
+                <button type="button" onclick="toggleMobileDrawer()" class="w-10 h-10 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white flex items-center justify-center transition-all shadow-lg" title="Profile Menu Options">
+                    <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE DRAWER MENU -->
+    <div id="mobileDrawer" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex justify-end">
+        <div class="w-80 sm:w-96 bg-slate-900 border-l border-slate-800 h-full p-6 flex flex-col justify-between shadow-2xl overflow-y-auto">
+            <div>
+                <div class="flex items-center justify-between pb-6 border-b border-slate-800 mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-500/10 text-brand-500 flex items-center justify-center font-bold text-lg">
+                            <i class="fa-solid fa-user-gear"></i>
+                        </div>
+                        <div>
+                            <h4 id="drawerUserName" class="text-sm font-bold text-white">Client Account</h4>
+                            <span id="drawerUserEmail" class="text-xs text-slate-400 block truncate max-w-[160px]">user@example.com</span>
+                        </div>
+                    </div>
+                    <button type="button" onclick="toggleMobileDrawer()" class="text-slate-400 hover:text-white text-xl">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Profile Info -->
+                <div class="mb-6 p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-2 text-xs">
+                    <span class="font-bold text-brand-500 uppercase tracking-wider block mb-1">Customer Profile Info</span>
+                    <div class="flex justify-between text-slate-300"><span>Full Name:</span> <strong id="profileFullName">-</strong></div>
+                    <div class="flex justify-between text-slate-300"><span>Contact:</span> <strong id="profileContact">-</strong></div>
+                    <div class="flex justify-between text-slate-3

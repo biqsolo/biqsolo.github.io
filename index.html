@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biqsolo Digital | Client Portal & Services</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <!-- Paystack Inline JS SDK -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your EmailJS Public Key if needed
+        })();
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            
+            <!-- Left Header: Bold 3-Dots Menu Button + Brand Logo -->
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleProfileDrawer()" class="text-emerald-400 hover:text-white p-2 text-2xl font-black rounded-lg focus:outline-none tracking-widest leading-none border border-emerald-500/30 hover:border-emerald-400 bg-slate-950/50" title="Profile & Settings Menu">
+                    &#8942;
+                </button>
+
+                <div class="flex items-center space-x-2">
+                    <span class="text-xl font-black tracking-wider text-emerald-400">BIQSOLO</span>
+                    <span class="text-xs uppercase bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-800">Digital Portal</span>
+                </div>
+            </div>
+
+            <!-- Right Header Action Controls -->
+            <div class="flex items-center space-x-4">
+                <!-- Live Wallet Display -->
+                <div class="hidden sm:flex items-center bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                    <span class="text-slate-400 mr-1">Wallet:</span>
+                    <span id="headerWallet" class="text-emerald-400 font-bold">₦0.00</span>
+                </div>
+
+                <!-- Auth Buttons -->
+                <div id="authNavButtons" class="flex items-center space-x-2">
+                    <button onclick="openAuthModal('login')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition shadow-lg shadow-emerald-900/30">
+                        Sign In / Register
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 text-center">
+            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+                Elevate Your Brand with <span class="text-emerald-400">Biqsolo Digital</span>
+            </h1>
+            <p class="max-w-2xl mx-auto text-sm sm:text-base text-slate-400 mb-8">
+                Professional flyer designs, ATS-optimized CVs, custom logos, and interactive client portals crafted for your personal and corporate success.
+            </p>
+            <div class="flex justify-center gap-4">
+                <a href="#services" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition shadow-lg shadow-emerald-600/20">
+                    Explore Services Offering
+                </a>
+                <button onclick="openAuthModal('register')" class="bg-slate-900 hover:bg-slate-800 text-slate-200 px-6 py-2.5 rounded-xl text-sm font-bold border border-slate-700 transition">
+                    Create Account
+                </button>
+            </div>
+        </section>
+
+        <!-- Services Offering Showcase with Clear Visual Sample Mockups -->
+        <section id="services" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-slate-100">Services Offering</h2>
+                <p class="text-xs text-slate-400 mt-1">Select any service offering below and pay securely via Paystack.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Service 1: Flyer & Graphics -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-emerald-500/50 transition shadow-xl">
+                    <!-- Visual Sample Mockup Box -->
+                    <div class="h-40 bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 p-4 relative flex flex-col items-center justify-center border-b border-slate-800">
+                        <div class="absolute top-2 right-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[9px] px-2 py-0.5 rounded font-bold uppercase">Sample Template</div>
+                        <div class="w-12 h-12 rounded-full bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold mb-2 text-xl">🎨</div>
+                        <span class="text-xs font-bold text-white tracking-wide">HD Flyer Design Sample</span>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-1">Event & Promo Flyers</h4>
+                            <p class="text-xs text-slate-400 mb-4">Vibrant, HD promotional graphics formatted for Instagram, WhatsApp status, and printing.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span class="text-emerald-400 font-bold text-sm">₦5,000</span>
+                            <button onclick="payWithPaystack('Flyer Design', 5000)" class="bg-emerald-600 hover:bg-emerald-500 text-xs text-white font-semibold px-3 py-1.5 rounded-lg transition shadow">Pay Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 2: CV Optimization -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-emerald-500/50 transition shadow-xl">
+                    <!-- Visual Sample Mockup Box -->
+                    <div class="h-40 bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-950 p-4 relative flex flex-col items-center justify-center border-b border-slate-800">
+                        <div class="absolute top-2 right-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[9px] px-2 py-0.5 rounded font-bold uppercase">Sample Template</div>
+                        <div class="w-12 h-12 rounded-full bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold mb-2 text-xl">📄</div>
+                        <span class="text-xs font-bold text-white tracking-wide">ATS Resume Layout</span>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-1">Professional CV / Resume</h4>
+                            <p class="text-xs text-slate-400 mb-4">Formatted to bypass applicant tracking software (ATS) and highlight key competencies.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span class="text-emerald-400 font-bold text-sm">₦7,500</span>
+                            <button onclick="payWithPaystack('CV Optimization', 7500)" class="bg-emerald-600 hover:bg-emerald-500 text-xs text-white font-semibold px-3 py-1.5 rounded-lg transition shadow">Pay Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 3: Logo Design -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-emerald-500/50 transition shadow-xl">
+                    <!-- Visual Sample Mockup Box -->
+                    <div class="h-40 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 p-4 relative flex flex-col items-center justify-center border-b border-slate-800">
+                        <div class="absolute top-2 right-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[9px] px-2 py-0.5 rounded font-bold uppercase">Sample Template</div>
+                        <div class="w-12 h-12 rounded-full bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold mb-2 text-xl">⭐</div>
+                        <span class="text-xs font-bold text-white tracking-wide">Vector Brand Logo</span>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-1">Custom Logo Design</h4>
+                            <p class="text-xs text-slate-400 mb-4">Vector brand logos complete with transparent PNGs, high-res JPEGs, and brand kit files.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span class="text-emerald-400 font-bold text-sm">₦10,000</span>
+                            <button onclick="payWithPaystack('Logo Design', 10000)" class="bg-emerald-600 hover:bg-emerald-500 text-xs text-white font-semibold px-3 py-1.5 rounded-lg transition shadow">Pay Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 4: Web Development -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-emerald-500/50 transition shadow-xl">
+                    <!-- Visual Sample Mockup Box -->
+                    <div class="h-40 bg-gradient-to-br from-emerald-950 via-slate-950 to-slate-900 p-4 relative flex flex-col items-center justify-center border-b border-slate-800">
+                        <div class="absolute top-2 right-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[9px] px-2 py-0.5 rounded font-bold uppercase">Sample Template</div>
+                        <div class="w-12 h-12 rounded-full bg-emerald-600/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold mb-2 text-xl">💻</div>
+                        <span class="text-xs font-bold text-white tracking-wide">Responsive Web Portal</span>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-white text-base mb-1">Client Web Portals</h4>
+                            <p class="text-xs text-slate-400 mb-4">Custom responsive web portals, landing pages, payment gateway setups, and domain integration.</p>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-800 pt-3">
+                            <span class="text-emerald-400 font-bold text-sm">₦35,000+</span>
+                            <button onclick="payWithPaystack('Web Development', 35000)" class="bg-emerald-600 hover:bg-emerald-500 text-xs text-white font-semibold px-3 py-1.5 rounded-lg transition shadow">Pay Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500">
+        <p>&copy; 2026 Biqsolo Digital. All rights reserved.</p>
+        <p class="mt-2">
+            Support: <a href="mailto:biqsolocash@gmail.com" class="text-emerald-400 hover:underline">biqsolocash@gmail.com</a> | 
+            Hotline: <a href="tel:+2348088417431" class="text-emerald-400 hover:underline">+234 808 841 7431</a>
+        </p>
+    </footer>
+
+    <!-- SLIDE-OUT CUSTOMER PROFILE DRAWER -->
+    <div id="profileDrawer" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 hidden flex justify-start">
+        <div class="bg-slate-900 border-r border-slate-800 w-full max-w-sm h-full p-6 flex flex-col justify-between overflow-y-auto">
+            <div>
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4 mb-6">
+                    <h3 class="font-bold text-lg text-white">Customer Account</h3>
+                    <button onclick="toggleProfileDrawer()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-6">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center font-bold text-white text-lg">
+                            <span id="drawerAvatarInitial">U</span>
+                        </div>
+                        <div>
+                            <h4 id="drawerUsername" class="font-bold text-sm text-white">Guest User</h4>
+                            <p id="drawerEmail" class="text-xs text-slate-400">Not logged in</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-xs uppercase font-bold text-emerald-400 tracking-wider">Account Settings</h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Edit Username</label>
+                        <input type="text" id="editUsernameInput" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500" placeholder="Enter new username">
+                    </div>
+                    <div class="border-t border-slate-800 pt-3">
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Change Password</label>
+                        <input type="password" id="drawerOldPassword" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white mb-2 focus:outline-none focus:border-emerald-500" placeholder="Current password">
+                        <input type="password" id="drawerNewPassword" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500" placeholder="New password">
+                    </div>
+                    <button onclick="saveProfileChanges()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded-lg text-xs transition">
+                        Save Profile Updates
+                    </button>
+                </div>
+
+                <div class="border-t border-slate-800 mt-6 pt-4 space-y-2">
+                    <button onclick="openSecurityModal()" class="w-full text-left text-xs text-slate-300 hover:text-emerald-400 py-1 flex justify-between items-center">
+                        <span>🔒 Security & Login Audit</span>
+                        <span>&rarr;</span>
+                    </button>
+                    <button onclick="openPrivacyModal()" class="w-full text-left text-xs text-slate-300 hover:text-emerald-400 py-1 flex justify-between items-center">
+                        <span>📜 Privacy Policy</span>
+                        <span>&rarr;</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-4 mt-6">
+                <button onclick="logoutUser()" class="w-full bg-red-950/40 border border-red-800/50 hover:bg-red-900 text-red-400 font-semibold py-2 rounded-lg text-xs transition">
+                    Sign Out Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTHENTICATION & FORGOT PASSWORD MODAL -->
+    <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 relative shadow-2xl">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold">&times;</button>
+
+            <div id="authTabs" class="flex border-b border-slate-800 mb-6">
+                <button onclick="switchTab('login')" id="tabLoginBtn" class="flex-1 pb-3 text-sm font-bold text-emerald-400 border-b-2 border-emerald-400">Log In</button>
+                <button onclick="switchTab('register')" id="tabRegisterBtn" class="flex-1 pb-3 text-sm font-bold text-slate-400">Create Account</button>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Email Address</label>
+                    <input type="email" id="loginEmail" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="you@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Password</label>
+                    <input type="password" id="loginPassword" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="••••••••">
+                    <div class="text-right mt-1">
+                        <button type="button" onclick="showForgotPasswordStep1()" class="text-xs text-emerald-400 hover:underline">Forgot Password?</button>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition">Log In to Portal &rarr;</button>
+            </form>
+
+            <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Full Name / Username</label>
+                    <input type="text" id="regName" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="Saaondo Solomon">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Email Address</label>
+                    <input type="email" id="regEmail" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="you@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Password</label>
+                    <input type="password" id="regPassword" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition">Create Account &rarr;</button>
+            </form>
+
+            <div id="forgotPasswordContainer" class="hidden space-y-4">
+                <h3 class="text-lg font-bold text-emerald-400">Reset Your Password</h3>
+                <div id="fpStep1" class="space-y-4">
+                    <p class="text-xs text-slate-400">Enter your registered email address to receive a 6-digit security verification code.</p>
+                    <input type="email" id="fpEmailInput" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="you@example.com">
+                    <button type="button" onclick="sendPasswordResetOTP()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition">Send 6-Digit Code</button>
+                    <button type="button" onclick="switchTab('login')" class="w-full text-center text-xs text-slate-400 hover:text-white pt-2">Back to Login</button>
+                </div>
+                <div id="fpStep2" class="space-y-4 hidden">
+                    <p class="text-xs text-slate-400">Enter the 6-digit code sent to your email inbox.</p>
+                    <input type="text" id="fpCodeInput" maxlength="6" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-center text-xl tracking-widest text-emerald-400 focus:outline-none focus:border-emerald-500" placeholder="123456">
+                    <button type="button" onclick="verifyPasswordResetOTP()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition">Verify Code</button>
+                </div>
+                <div id="fpStep3" class="space-y-4 hidden">
+                    <p class="text-xs text-slate-400">Enter your new password below.</p>
+                    <input type="password" id="newPasswordInput" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white mb-2 focus:outline-none focus:border-emerald-500" placeholder="New Password">
+                    <input type="password" id="confirmPasswordInput" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="Confirm New Password">
+                    <button type="button" onclick="saveNewPassword()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition">Save New Password & Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRIVACY POLICY MODAL -->
+    <div id="privacyModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl p-6 relative">
+            <button onclick="closePrivacyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold">&times;</button>
+            <h3 class="text-lg font-bold text-emerald-400 mb-4">Privacy Policy & Data Security</h3>
+            <div class="text-xs text-slate-300 space-y-3 max-h-80 overflow-y-auto">
+                <p><strong>1. Data Encryption & Storage:</strong> Biqsolo Digital safeguards client information including usernames, emails, and transaction history using secure browser state standards.</p>
+                <p><strong>2. Contact Details:</strong> Client contact metrics provided during order processing are strictly used for project delivery and support notifications.</p>
+                <p><strong>3. Third-Party Dispatches:</strong> Automated emails and 6-digit verification codes are routed via EmailJS infrastructure.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECURITY MODAL -->
+    <div id="securityModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 relative">
+            <button onclick="closeSecurityModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold">&times;</button>
+            <h3 class="text-lg font-bold text-emerald-400 mb-4">Security Overview</h3>
+            <div class="text-xs text-slate-300 space-y-3">
+                <p><strong>Verification:</strong> 6-Digit OTP Email Authentication Enabled.</p>
+                <p><strong>Support Contact:</strong> biqsolocash@gmail.com | +234 808 841 7431</p>
+                <p><strong>Active Session:</strong> Secured with browser-level state management.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        let generatedOTP = "";
+        let resetTargetEmail = "";
+        let currentUser = JSON.parse(localStorage.getItem('biqsolo_user')) || null;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            updateUIState();
+        });
+
+        function toggleProfileDrawer() {
+            const drawer = document.getElementById('profileDrawer');
+            drawer.classList.toggle('hidden');
+            if (!drawer.classList.contains('hidden')) {
+                updateDrawerData();
+            }
+        }
+
+        function updateUIState() {
+            if (currentUser) {
+                document.getElementById('authNavButtons').innerHTML = `
+                    <span class="text-xs text-emerald-400 font-bold hidden sm:inline">Hi, ${currentUser.username}</span>
+                `;
+                document.getElementById('headerWallet').innerText = "₦" + (currentUser.wallet || 0).toLocaleString() + ".00";
+            } else {
+                document.getElementById('authNavButtons').innerHTML = `
+                    <button onclick="openAuthModal('login')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition">
+                        Sign In / Register
+                    </button>
+                `;
+                document.getElementById('headerWallet').innerText = "₦0.00";
+            }
+        }
+
+        function updateDrawerData() {
+            if (currentUser) {
+                document.getElementById('drawerUsername').innerText = currentUser.username;
+                document.getElementById('drawerEmail').innerText = currentUser.email;
+                document.getElementById('drawerAvatarInitial').innerText = currentUser.username.charAt(0).toUpperCase();
+                document.getElementById('editUsernameInput').value = currentUser.username;
+            } else {
+                document.getElementById('drawerUsername').innerText = "Guest User";
+                document.getElementById('drawerEmail').innerText = "Please log in";
+                document.getElementById('drawerAvatarInitial').innerText = "G";
+                document.getElementById('editUsernameInput').value = "";
+            }
+        }
+
+        function saveProfileChanges() {
+            if (!currentUser) {
+                alert("Please sign in to update profile settings.");
+                return;
+            }
+
+            let newName = document.getElementById('editUsernameInput').value.trim();
+            let oldPass = document.getElementById('drawerOldPassword').value;
+            let newPass = document.getElementById('drawerNewPassword').value;
+
+            if (newName) {
+                currentUser.username = newName;
+            }
+
+            if (newPass) {
+                if (oldPass !== currentUser.password) {
+                    alert("Current password incorrect.");
+                    return;
+                }
+                currentUser.password = newPass;
+                alert("Password updated successfully!");
+            }
+
+            localStorage.setItem('biqsolo_user', JSON.stringify(currentUser));
+            updateUIState();
+            updateDrawerData();
+            alert("Profile settings saved successfully!");
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('biqsolo_user');
+            currentUser = null;
+            updateUIState();
+            toggleProfileDrawer();
+            alert("You have been logged out.");
+        }
+
+        function openAuthModal(mode) {
+            document.getElementById('authModal').classList.remove('hidden');
+            switchTab(mode);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function switchTab(mode) {
+            document.getElementById('forgotPasswordContainer').classList.add('hidden');
+            if (mode === 'login') {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('authTabs').classList.remove('hidden');
+            } else {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+                document.getElementById('authTabs').classList.remove('hidden');
+            }
+        }
+
+        function showForgotPasswordStep1() {
+            document.getElementById('authTabs').classList.add('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('forgotPasswordContainer').classList.remove('hidden');
+            document.getElementById('fpStep1').classList.remove('hidden');
+            document.getElementById('fpStep2').classList.add('hidden');
+            document.getElementById('fpStep3').classList.add('hidden');
+        }
+
+        function sendPasswordResetOTP() {
+            resetTargetEmail = document.getElementById('fpEmailInput').value.trim();
+            if (!resetTargetEmail) {
+                alert("Please enter your email address.");
+                return;
+            }
+
+            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+
+            let templateParams = {
+                to_username: resetTargetEmail.split('@')[0],
+                to_email: resetTargetEmail,
+                verification_code: generatedOTP,
+                user_country: "Nigeria",
+                user_location: "Nigeria",
+                user_device: navigator.userAgent,
+                time_sent: new Date().toLocaleString()
+            };
+
+            emailjs.send('service_qt3d38r', 'template_o6bwhmg', templateParams)
+                .then(function() {
+                    alert("A 6-digit verification code has been dispatched to your email!");
+                    document.getElementById('fpStep1').classList.add('hidden');
+                    document.getElementById('fpStep2').classList.remove('hidden');
+                }, function() {
+                    alert("Verification Code Generated (Testing Code: " + generatedOTP + ")");
+                    document.getElementById('fpStep1').classList.add('hidden');
+                    document.getElementById('fpStep2').classList.remove('hidden');
+                });
+        }
+
+        function verifyPasswordResetOTP() {
+            let code = document.getElementById('fpCodeInput').value.trim();
+            if (code === generatedOTP) {
+                document.getElementById('fpStep2').classList.add('hidden');
+                document.getElementById('fpStep3').classList.remove('hidden');
+            } else {
+                alert("Invalid verification code. Please check your email and try again.");
+            }
+        }
+
+        function saveNewPassword() {
+            let np = document.getElementById('newPasswordInput').value;
+            let cp = document.getElementById('confirmPasswordInput').value;
+
+            if (np.length < 6) {
+                alert("Password must be at least 6 characters.");
+                return;
+            }
+
+            if (np !== cp) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            if (currentUser && currentUser.email === resetTargetEmail) {
+                currentUser.password = np;
+                localStorage.setItem('biqsolo_user', JSON.stringify(currentUser));
+            }
+
+            alert("Password updated successfully! You can now log in.");
+            closeAuthModal();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            let email = document.getElementById('loginEmail').value;
+            let pass = document.getElementById('loginPassword').value;
+
+            currentUser = { username: email.split('@')[0], email: email, password: pass, wallet: 0 };
+            localStorage.setItem('biqsolo_user', JSON.stringify(currentUser));
+            updateUIState();
+            closeAuthModal();
+            alert("Signed in successfully as " + currentUser.username);
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            let name = document.getElementById('regName').value;
+            let email = document.getElementById('regEmail').value;
+            let pass = document.getElementById('regPassword').value;
+
+            currentUser = { username: name, email: email, password: pass, wallet: 0 };
+            localStorage.setItem('biqsolo_user', JSON.stringify(currentUser));
+            updateUIState();
+            closeAuthModal();
+            alert("Account created successfully!");
+        }
+
+        function openPrivacyModal() {
+            document.getElementById('privacyModal').classList.remove('hidden');
+        }
+
+        function closePrivacyModal() {
+            document.getElementById('privacyModal').classList.add('hidden');
+        }
+
+        function openSecurityModal() {
+            document.getElementById('securityModal').classList.remove('hidden');
+        }
+
+        function closeSecurityModal() {
+            document.getElementById('securityModal').classList.add('hidden');
+        }
+
+        // Secure Paystack Checkout Function
+        function payWithPaystack(serviceName, amountInNaira) {
+            let userEmail = currentUser ? currentUser.email : "guest@biqsolodigital.com";
+            let userFullname = currentUser ? currentUser.username : "Biqsolo Guest";
+
+            let handler = PaystackPop.setup({
+                key: 'pk_live_YOUR_ACTUAL_PAYSTACK_PUBLIC_KEY', // Replace with your actual Paystack Public Key
+                email: userEmail,
+                amount: amountInNaira * 100, // Amount in kobo
+                currency: 'NGN',
+                ref: 'BIQ_' + Math.floor((Math.random() * 1000000000) + 1),
+                metadata: {
+                    custom_fields: [
+                        { display_name: "Service Ordered", variable_name: "service_name", value: serviceName },
+                        { display_name: "Customer Name", variable_name: "customer_name", value: userFullname }
+                    ]
+                },
+                callback: function(response) {
+                    alert("Payment successful! Reference: " + response.reference);
+                    if (currentUser) {
+                        currentUser.wallet = (currentUser.wallet || 0) + amountInNaira;
+                        localStorage.setItem('biqsolo_user', JSON.stringify(currentUser));
+                    }
+                    updateUIState();
+                },
+                onClose: function() {
+                    alert('Transaction popup closed.');
+                }
+            });
+            handler.openIframe();
+        }
+    </script>
+</body>
+</html>

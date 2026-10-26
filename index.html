@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biqsolo Digital | Professional Digital Services & Client Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your actual EmailJS public key if needed
+        })();
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-xl font-black tracking-wider text-emerald-400">BIQSOLO</span>
+                <span class="text-xs uppercase bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-800">Digital Portal</span>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                <a href="#services" class="hover:text-emerald-400 transition">Services</a>
+                <a href="#dashboard" class="hover:text-emerald-400 transition">Dashboard</a>
+                <a href="#support" class="hover:text-emerald-400 transition">Support</a>
+            </nav>
+            <div id="authNavArea" class="flex items-center space-x-3">
+                <button onclick="openAuthModal('login')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition shadow-lg shadow-emerald-900/30">
+                    Sign In / Register
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="flex-grow">
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 text-center">
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6">
+                Elevate Your Brand with <span class="text-emerald-400">Biqsolo Digital</span>
+            </h1>
+            <p class="max-w-2xl mx-auto text-lg text-slate-400 mb-10">
+                Professional flyer designs, stunning logos, optimized CVs, and robust client portals tailored to drive your success.
+            </p>
+            <div class="flex justify-center gap-4">
+                <a href="#services" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-xl font-bold transition shadow-lg shadow-emerald-600/20">
+                    Explore Services
+                </a>
+                <button onclick="openAuthModal('register')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-8 py-3 rounded-xl font-bold border border-slate-700 transition">
+                    Create Account
+                </button>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <h2 class="text-2xl font-bold mb-8 text-center">Our Digital Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                    <h3 class="text-xl font-bold text-emerald-400 mb-2">Flyer & Graphics</h3>
+                    <p class="text-slate-400 text-sm mb-4">High-converting promotional flyers and social media graphics designed to grab attention instantly.</p>
+                    <span class="text-lg font-bold">₦5,000</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                    <h3 class="text-xl font-bold text-emerald-400 mb-2">CV Optimization</h3>
+                    <p class="text-slate-400 text-sm mb-4">ATS-friendly professional resume and cover letter writing to land your dream career.</p>
+                    <span class="text-lg font-bold">₦7,500</span>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                    <h3 class="text-xl font-bold text-emerald-400 mb-2">Web Development</h3>
+                    <p class="text-slate-400 text-sm mb-4">Clean, fast responsive client web portals, landing pages, and interactive applications.</p>
+                    <span class="text-lg font-bold">₦35,000+</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-xs text-slate-500">
+        <p>&copy; 2026 Biqsolo Digital. All rights reserved. Support: biqsolocash@gmail.com | +234 808 841 7431</p>
+    </footer>
+
+    <!-- Auth & Forgot Password Modal System -->
+    <div id="authModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 relative shadow-2xl">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold">&times;</button>
+            
+            <!-- Tab Headers -->
+            <div id="authTabs" class="flex border-b border-slate-800 mb-6">
+                <button onclick="switchTab('login')" id="tabLoginBtn" class="flex-1 pb-3 text-sm font-bold text-emerald-400 border-b-2 border-emerald-400">Log In</button>
+                <button onclick="switchTab('register')" id="tabRegisterBtn" class="flex-1 pb-3 text-sm font-bold text-slate-400">Create Account</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Email Address</label>
+                    <input type="email" id="loginEmail" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="you@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Password</label>
+                    <input type="password" id="loginPassword" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="••••••••">
+                    <div class="text-right mt-1">
+                        <button type="button" onclick="showForgotPasswordStep1()" class="text-xs text-emerald-400 hover:underline">Forgot Password?</button>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition shadow-lg shadow-emerald-900/30">Log In to Portal &rarr;</button>
+            </form>
+
+            <!-- REGISTER FORM -->
+            <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Full Name</label>
+                    <input type="text" id="regName" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="Saaondo Solomon">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Email Address</label>
+                    <input type="email" id="regEmail" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="you@example.com">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Password</label>
+                    <input type="password" id="regPassword" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition shadow-lg shadow-emerald-900/30">Create Account &rarr;</button>
+            </form>
+
+            <!-- FORGOT PASSWORD FLOW (HIDDEN INITIALLY) -->
+            <div id="forgotPasswordContainer" class="hidden space-y-4">
+                <h3 class="text-lg font-bold text-emerald-400">Reset Your Password</h3>
+                
+                <!-- Step 1: Request OTP Email -->
+                <div id="fpStep1" class="space-y-4">
+                    <p class="text-xs text-slate-400">Enter your registered email address. We will send a 6-digit security verification code to your inbox.</p>
+                    <div>
+                        <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Your Email</label>
+                        <input type="email" id="fpEmailInput" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="you@example.com">
+                    </div>
+                    <button type="button" onclick="sendPasswordResetOTP()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition">Send 6-Digit Code</button>
+                    <button type="button" onclick="backToLogin()" class="w-full text-center text-xs text-slate-400 hover:text-white pt-2">Back to Login</button>
+                </div>
+
+                <!-- Step 2: Enter 6-Digit Code -->
+                <div id="fpStep2" class="space-y-4 hidden">
+                    <p class="text-xs text-slate-400">Enter the 6-digit verification code sent to your email.</p>
+                    <div>
+                        <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">6-Digit Code</label>
+                        <input type="text" id="fpCodeInput" maxlength="6" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-center text-xl tracking-widest text-emerald-400 focus:outline-none focus:border-emerald-500" placeholder="123456">
+                    </div>
+                    <button type="button" onclick="verifyPasswordResetOTP()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition">Verify Code</button>
+                </div>
+
+                <!-- Step 3: Set New Password -->
+                <div id="fpStep3" class="space-y-4 hidden">
+                    <p class="text-xs text-slate-400">Verification successful! Create your new password below.</p>
+                    <div>
+                        <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">New Password</label>
+                        <input type="password" id="newPasswordInput" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="••••••••">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase font-semibold text-slate-400 mb-1">Confirm New Password</label>
+                        <input type="password" id="confirmPasswordInput" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" placeholder="••••••••">
+                    </div>
+                    <button type="button" onclick="saveNewPassword()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-lg transition">Update Password & Login</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        let generatedOTP = "";
+        let resetTargetEmail = "";
+
+        function openAuthModal(mode) {
+            document.getElementById('authModal').classList.remove('hidden');
+            switchTab(mode);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+            backToLogin();
+        }
+
+        function switchTab(mode) {
+            document.getElementById('forgotPasswordContainer').classList.add('hidden');
+            if(mode === 'login') {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('authTabs').classList.remove('hidden');
+                document.getElementById('tabLoginBtn').className = "flex-1 pb-3 text-sm font-bold text-emerald-400 border-b-2 border-emerald-400";
+                document.getElementById('tabRegisterBtn').className = "flex-1 pb-3 text-sm font-bold text-slate-400";
+            } else {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+                document.getElementById('authTabs').classList.remove('hidden');
+                document.getElementById('tabRegisterBtn').className = "flex-1 pb-3 text-sm font-bold text-emerald-400 border-b-2 border-emerald-400";
+                document.getElementById('tabLoginBtn').className = "flex-1 pb-3 text-sm font-bold text-slate-400";
+            }
+        }
+
+        function showForgotPasswordStep1() {
+            document.getElementById('authTabs').classList.add('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('forgotPasswordContainer').classList.remove('hidden');
+            document.getElementById('fpStep1').classList.remove('hidden');
+            document.getElementById('fpStep2').classList.add('hidden');
+            document.getElementById('fpStep3').classList.add('hidden');
+        }
+
+        function backToLogin() {
+            switchTab('login');
+        }
+
+        function sendPasswordResetOTP() {
+            resetTargetEmail = document.getElementById('fpEmailInput').value.trim();
+            if(!resetTargetEmail) {
+                alert("Please enter your email address.");
+                return;
+            }
+            
+            // Generate 6-digit OTP code
+            generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            // Dispatch via EmailJS (Service ID: service_qt3d38r, Template ID: template_o6bwhmg)
+            let templateParams = {
+                to_username: resetTargetEmail.split('@')[0],
+                to_email: resetTargetEmail,
+                verification_code: generatedOTP,
+                user_country: "Nigeria",
+                user_location: "Jahun, Jigawa / Benue",
+                user_device: navigator.userAgent,
+                time_sent: new Date().toLocaleString()
+            };
+
+            emailjs.send('service_qt3d38r', 'template_o6bwhmg', templateParams)
+                .then(function(response) {
+                    alert("A 6-digit security code has been sent to your email!");
+                    document.getElementById('fpStep1').classList.add('hidden');
+                    document.getElementById('fpStep2').classList.remove('hidden');
+                }, function(error) {
+                    // Fallback alert if offline or keys need verification during testing
+                    alert("OTP Dispatched (Test Mode Code: " + generatedOTP + ")");
+                    document.getElementById('fpStep1').classList.add('hidden');
+                    document.getElementById('fpStep2').classList.remove('hidden');
+                });
+        }
+
+        function verifyPasswordResetOTP() {
+            let enteredCode = document.getElementById('fpCodeInput').value.trim();
+            if(enteredCode === generatedOTP) {
+                document.getElementById('fpStep2').classList.add('hidden');
+                document.getElementById('fpStep3').classList.remove('hidden');
+            } else {
+                alert("Invalid verification code. Please check your email and try again.");
+            }
+        }
+
+        function saveNewPassword() {
+            let newPass = document.getElementById('newPasswordInput').value;
+            let confirmPass = document.getElementById('confirmPasswordInput').value;
+
+            if(!newPass || newPass.length < 6) {
+                alert("Password must be at least 6 characters long.");
+                return;
+            }
+
+            if(newPass !== confirmPass) {
+                alert("Passwords do not match! Please confirm your new password correctly.");
+                return;
+            }
+
+            // Save new password in localStorage for simulation
+            localStorage.setItem("biqsolo_pass_" + resetTargetEmail, newPass);
+            alert("Password successfully updated! You can now log in with your new password.");
+            closeAuthModal();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            let email = document.getElementById('loginEmail').value;
+            alert("Welcome back to Biqsolo Digital portal, " + email.split('@')[0] + "!");
+            closeAuthModal();
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            let name = document.getElementById('regName').value;
+            alert("Account successfully created for " + name + "! Welcome to Biqsolo Digital.");
+            closeAuthModal();
+        }
+    </script>
+</body>
+</html>

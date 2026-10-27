@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biqsolo Digital & Craft Art Platform</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Paystack Inline JS SDK -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  
+  <!-- Firebase App & Services (Compat SDKs) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    .gold-gradient { background: linear-gradient(135deg, #f39c12, #d35400); }
+    .gold-text { background: linear-gradient(135deg, #f1c40f, #e67e22); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
+
+  <!-- ================= HEADER & NAV ================= -->
+  <header class="border-b border-slate-800 bg-slate-900/80 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('shop')">
+        <div class="w-10 h-10 rounded-xl gold-gradient flex items-center justify-center text-slate-950 font-bold text-xl shadow-lg">B</div>
+        <span class="text-xl font-bold tracking-wide">Biqsolo <span class="gold-text">Digital</span></span>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex space-x-6 text-sm font-medium">
+        <button onclick="switchTab('shop')" class="hover:text-amber-400 transition">Storefront</button>
+        <button onclick="switchTab('commission')" class="hover:text-amber-400 transition">Custom Commission</button>
+        <button onclick="switchTab('dashboard')" class="hover:text-amber-400 transition">Client Portal</button>
+        <button onclick="switchTab('admin')" class="hover:text-amber-400 transition text-slate-400"><i class="fa-solid fa-lock text-xs mr-1"></i>Admin</button>
+      </nav>
+
+      <!-- Cart, Wallet & Auth State -->
+      <div class="flex items-center space-x-3">
+        <div id="auth-nav-box" class="flex items-center space-x-2"></div>
+        <div class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center space-x-2 text-xs">
+          <i class="fa-solid fa-wallet text-amber-400"></i>
+          <span>Wallet: <strong class="text-amber-400" id="nav-wallet">₦0.00</strong></span>
+          <button onclick="openTopupModal()" class="ml-2 bg-amber-500 hover:bg-amber-600 text-slate-950 px-2 py-0.5 rounded font-bold transition">+</button>
+        </div>
+        <button onclick="openCartModal()" class="relative p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-amber-400 border border-slate-700 transition">
+          <i class="fa-solid fa-shopping-bag"></i>
+          <span id="cart-count" class="absolute -top-1 -right-1 bg-amber-500 text-slate-950 text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
+
+    <!-- HERO SECTION -->
+    <section class="mb-12 text-center py-8 rounded-2xl glass-card px-4 border border-amber-500/20">
+      <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Digital Artworks & <span class="gold-text">Craft Creation</span></h1>
+      <p class="text-slate-400 max-w-2xl mx-auto text-sm md:text-base mb-6">Explore instant digital downloads, order handmade physical crafts, or book custom art commissions synced securely in the cloud.</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <button onclick="switchTab('shop')" class="gold-gradient text-slate-950 font-bold px-6 py-3 rounded-xl shadow-lg hover:opacity-90 transition">Browse Products</button>
+        <button onclick="switchTab('commission')" class="bg-slate-800 hover:bg-slate-700 text-slate-100 font-semibold px-6 py-3 rounded-xl border border-slate-700 transition">Request Custom Art</button>
+      </div>
+    </section>
+
+    <!-- STOREFRONT TAB -->
+    <div id="tab-shop" class="tab-content">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold border-l-4 border-amber-500 pl-3">Digital Assets & Crafts Store</h2>
+        <div class="flex gap-2 text-xs">
+          <button onclick="filterProducts('all')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 px-3 py-1.5 rounded-lg border border-slate-700 transition">All</button>
+          <button onclick="filterProducts('digital')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 px-3 py-1.5 rounded-lg border border-slate-700 transition">Digital Assets</button>
+          <button onclick="filterProducts('physical')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 px-3 py-1.5 rounded-lg border border-slate-700 transition">Physical Crafts</button>
+        </div>
+      </div>
+      <div id="product-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+    </div>
+
+    <!-- COMMISSION BUILDER TAB -->
+    <div id="tab-commission" class="tab-content hidden">
+      <div class="max-w-3xl mx-auto glass-card p-6 md:p-8 rounded-2xl border border-slate-800">
+        <h2 class="text-2xl font-bold mb-2 gold-text">Custom Art & Craft Commission Request</h2>
+        <p class="text-slate-400 text-sm mb-6">Submit your brief, choose licensing, and get an instant quote.</p>
+
+        <form id="commission-form" onsubmit="handleCommissionSubmit(event)" class="space-y-6">
+          <div>
+            <label class="block text-sm font-semibold mb-2">Category & Style</label>
+            <select id="comm-style" onchange="calculateQuote()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:border-amber-500 outline-none">
+              <option value="5000">Digital Vector Illustration - ₦5,000</option>
+              <option value="8000">Custom Logo & Branding Asset - ₦8,000</option>
+              <option value="12000">Realistic Digital Painting Portrait - ₦12,000</option>
+              <option value="15000">Handmade Physical Craft & Frame - ₦15,000</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold mb-2">Project Brief & Details</label>
+            <textarea id="comm-desc" rows="4" placeholder="Describe character design, color themes, dimensions..." required class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:border-amber-500 outline-none"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold mb-2">Usage License</label>
+            <div class="grid grid-cols-2 gap-4">
+              <label class="flex items-center space-x-3 bg-slate-900 p-3 rounded-xl border border-slate-800 cursor-pointer">
+                <input type="radio" name="license" value="1" checked onchange="calculateQuote()" class="text-amber-500">
+                <span class="text-sm">Personal Use (Base)</span>
+              </label>
+              <label class="flex items-center space-x-3 bg-slate-900 p-3 rounded-xl border border-slate-800 cursor-pointer">
+                <input type="radio" name="license" value="1.5" onchange="calculateQuote()" class="text-amber-500">
+                <span class="text-sm">Commercial License (+50%)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-slate-900/90 p-4 rounded-xl border border-amber-500/30 flex justify-between items-center">
+            <div>
+              <span class="text-xs text-slate-400 block">Calculated Total</span>
+              <span id="comm-total" class="text-2xl font-extrabold gold-text">₦5,000</span>
+            </div>
+            <button type="submit" class="gold-gradient text-slate-950 font-bold px-6 py-2.5 rounded-xl shadow-lg hover:opacity-90 transition">Submit Request</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- CLIENT PORTAL TAB -->
+    <div id="tab-dashboard" class="tab-content hidden">
+      <h2 class="text-2xl font-bold mb-6 border-l-4 border-amber-500 pl-3">Client Portal & Cloud Orders</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+          <div class="glass-card p-6 rounded-2xl border border-slate-800">
+            <h3 class="font-bold text-lg mb-4 flex items-center justify-between">
+              <span>Commission Status & Proof Reviews</span>
+              <i class="fa-solid fa-list-check text-amber-400"></i>
+            </h3>
+            <div id="active-commissions-list" class="space-y-4"></div>
+          </div>
+        </div>
+        <div>
+          <div class="glass-card p-6 rounded-2xl border border-slate-800">
+            <h3 class="font-bold text-lg mb-4 flex items-center justify-between">
+              <span>Digital File Locker</span>
+              <i class="fa-solid fa-download text-amber-400"></i>
+            </h3>
+            <div id="download-locker" class="space-y-3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN PANEL TAB -->
+    <div id="tab-admin" class="tab-content hidden">
+      <div class="glass-card p-6 rounded-2xl border border-slate-800 mb-8">
+        <h2 class="text-xl font-bold mb-4 gold-text"><i class="fa-solid fa-user-shield mr-2"></i>Artist & Admin Management Panel</h2>
+        <p class="text-xs text-slate-400 mb-6">Manage incoming commission briefs and upload proof previews for client review.</p>
+        <div id="admin-commissions-list" class="space-y-4"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- AUTH MODAL -->
+  <div id="modal-auth" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="auth-title" class="font-bold text-lg">Sign In to Biqsolo Digital</h3>
+        <button onclick="closeAuthModal()" class="text-slate-400 hover:text-slate-100">&times;</button>
+      </div>
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold mb-1">Email Address</label>
+          <input type="email" id="auth-email" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm focus:border-amber-500 outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Password</label>
+          <input type="password" id="auth-password" required class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm focus:border-amber-500 outline-none">
+        </div>
+        <button type="submit" id="auth-btn" class="w-full gold-gradient text-slate-950 font-bold py-3 rounded-xl shadow-lg hover:opacity-90 transition">Sign In</button>
+      </form>
+      <div class="mt-4 text-center text-xs">
+        <span id="auth-switch-text" class="text-slate-400">Don't have an account?</span>
+        <button onclick="toggleAuthMode()" id="auth-switch-btn" class="text-amber-400 font-bold ml-1 hover:underline">Register</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART MODAL -->
+  <div id="modal-cart" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-lg">Your Cart</h3>
+        <button onclick="closeCartModal()" class="text-slate-400 hover:text-slate-100">&times;</button>
+      </div>
+      <div id="cart-items" class="space-y-3 max-h-60 overflow-y-auto mb-4"></div>
+      <div class="border-t border-slate-800 pt-4 mb-4 flex justify-between items-center font-bold">
+        <span>Total:</span>
+        <span id="cart-total" class="gold-text text-xl">₦0</span>
+      </div>
+      <button onclick="processCartCheckout()" class="w-full gold-gradient text-slate-950 font-bold py-3 rounded-xl shadow-lg hover:opacity-90 transition">Pay via Wallet Balance</button>
+    </div>
+  </div>
+
+  <!-- WALLET TOPUP MODAL -->
+  <div id="modal-topup" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-lg">Fund Digital Wallet</h3>
+        <button onclick="closeTopupModal()" class="text-slate-400 hover:text-slate-100">&times;</button>
+      </div>
+      <div class="space-y-4 mb-6">
+        <div>
+          <label class="block text-xs font-semibold mb-2">Amount (NGN ₦)</label>
+          <input type="number" id="topup-amount" value="5000" min="500" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm focus:border-amber-500 outline-none">
+        </div>
+        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-400 space-y-1">
+          <p class="font-semibold text-slate-200">Direct Bank Transfer Option:</p>
+          <p>Gateway: <strong class="text-slate-100">Paystack Live</strong></p>
+          <p>Account: <strong class="text-amber-400" id="bank-acc">9023481023</strong> <button onclick="copyAcc()" class="ml-1 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-copy"></i></button></p>
+        </div>
+      </div>
+      <button onclick="triggerPaystackTopup()" class="w-full gold-gradient text-slate-950 font-bold py-3 rounded-xl shadow-lg hover:opacity-90 transition">Proceed with Paystack</button>
+    </div>
+  </div>
+
+  <!-- ================= JAVASCRIPT LOGIC ================= -->
+  <script>
+    // --- FIREBASE CONFIGURATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyC2yN83olfOBbmk735xl5KbmGDZpweH89c",
+      authDomain: "biqsolo-digital.firebaseapp.com",
+      projectId: "biqsolo-digital",
+      storageBucket: "biqsolo-digital.firebasestorage.app",
+      messagingSenderId: "881087122322",
+      appId: "1:881087122322:web:3be2d57796cb1e2a8c4f4b",
+      measurementId: "G-SP892BT0Y0"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentUser = null;
+    let userData = { wallet: 0, cart: [], commissions: [], downloads: [] };
+    let isRegisterMode = false;
+
+    const PRODUCTS = [
+      { id: 1, type: 'digital', title: 'Afro-Futurism Brush & Tool Kit', price: 3500, img: 'https://picsum.photos/400/300?random=1', fileUrl: 'sample-brush-kit.zip' },
+      { id: 2, type: 'digital', title: 'Abstract Melanin Printable Art (HD)', price: 2500, img: 'https://picsum.photos/400/300?random=2', fileUrl: 'hd-melanin-art.png' },
+      { id: 3, type: 'physical', title: 'Handmade Sculpted Clay Mask', price: 18000, img: 'https://picsum.photos/400/300?random=3', stock: 5 },
+      { id: 4, type: 'digital', title: 'Procreate Afro Character Templates', price: 4000, img: 'https://picsum.photos/400/300?random=4', fileUrl: 'procreate-templates.zip' },
+      { id: 5, type: 'physical', title: 'Framed Acrylic Canvas Artwork', price: 25000, img: 'https://picsum.photos/400/300?random=5', stock: 2 }
+    ];
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        loadUserDataFromFirestore(user.uid);
+      } else {
+        currentUser = null;
+        userData = { wallet: 0, cart: [], commissions: [], downloads: [] };
+        updateUI();
+      }
+    });
+
+    function loadUserDataFromFirestore(uid) {
+      db.collection("users").doc(uid).onSnapshot(doc => {
+        if (doc.exists) {
+          userData = doc.data();
+          if (!userData.wallet) userData.wallet = 0;
+          if (!userData.cart) userData.cart = [];
+          if (!userData.commissions) userData.commissions = [];
+          if (!userData.downloads) userData.downloads = [];
+        } else {
+          db.collection("users").doc(uid).set(userData);
+        }
+        updateUI();
+      });
+    }
+
+    function saveUserDataToFirestore() {
+      if (!currentUser) return;
+      db.collection("users").doc(currentUser.uid).set(userData);
+    }
+
+    function updateUI() {
+      document.getElementById('nav-wallet').innerText = '₦' + (userData.wallet || 0).toLocaleString();
+      document.getElementById('cart-count').innerText = (userData.cart || []).length;
+      
+      const authBox = document.getElementById('auth-nav-box');
+      if (currentUser) {
+        authBox.innerHTML = `
+          <span class="text-xs text-slate-400 hidden md:inline">${currentUser.email}</span>
+          <button onclick="logoutUser()" class="bg-slate-800 hover:bg-rose-500/20 hover:text-rose-300 text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition">Logout</button>
+        `;
+      } else {
+        authBox.innerHTML = `
+          <button onclick="openAuthModal()" class="gold-gradient text-slate-950 font-bold text-xs px-3 py-1.5 rounded-lg shadow transition">Sign In</button>
+        `;
+      }
+      renderProducts('all');
+      renderClientPortal();
+      renderAdminPortal();
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      if (tabId === 'dashboard') renderClientPortal();
+      if (tabId === 'admin') renderAdminPortal();
+    }
+
+    function openAuthModal() { document.getElementById('modal-auth').classList.remove('hidden'); }
+    function closeAuthModal() { document.getElementById('modal-auth').classList.add('hidden'); }
+
+    function toggleAuthMode() {
+      isRegisterMode = !isRegisterMode;
+      document.getElementById('auth-title').innerText = isRegisterMode ? "Create Biqsolo Digital Account" : "Sign In to Biqsolo Digital";
+      document.getElementById('auth-btn').innerText = isRegisterMode ? "Register Account" : "Sign In";
+      document.getElementById('auth-switch-text').innerText = isRegisterMode ? "Already have an account?" : "Don't have an account?";
+      document.getElementById('auth-switch-btn').innerText = isRegisterMode ? "Sign In" : "Register";
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-password').value;
+
+      if (isRegisterMode) {
+        auth.createUserWithEmailAndPassword(email, pass)
+          .then(() => { alert("Account created successfully!"); closeAuthModal(); })
+          .catch(err => alert(err.message));
+      } else {
+        auth.signInWithEmailAndPassword(email, pass)
+          .then(() => { alert("Signed in successfully!"); closeAuthModal(); })
+          .catch(err => alert(err.message));
+      }
+    }
+
+    function logoutUser() { auth.signOut().then(() => alert("Logged out successfully!")); }
+
+    function renderProducts(filter) {
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = '';
+      const list = filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.type === filter);
+      
+      list.forEach(p => {
+        grid.innerHTML += `
+          <div class="glass-card rounded-2xl overflow-hidden border border-slate-800 flex flex-col justify-between">
+            <div>
+              <div class="relative">
+                <img src="${p.img}" class="w-full h-48 object-cover">
+                <span class="absolute top-2 right-2 bg-slate-950/80 text-amber-400 text-xs px-2.5 py-1 rounded-full border border-slate-700 font-bold uppercase">${p.type}</span>
+              </div>
+              <div class="p-4">
+                <h3 class="font-bold text-base mb-1">${p.title}</h3>
+                <p class="gold-text font-extrabold text-lg">₦${p.price.toLocaleString()}</p>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <button onclick="addToCart(${p.id})" class="w-full bg-slate-800 hover:bg-amber-500 hover:text-slate-950 font-semibold py-2 rounded-xl border border-slate-700 transition text-sm">Add to Cart</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function filterProducts(type) { renderProducts(type); }
+
+    function addToCart(productId) {
+      if (!currentUser) { alert("Please sign in or register first to add items to your cart."); openAuthModal(); return; }
+      const prod = PRODUCTS.find(p => p.id === productId);
+      userData.cart.push(prod);
+      saveUserDataToFirestore();
+      alert(`${prod.title} added to cart!`);
+    }
+
+    function openCartModal() {
+      if (!currentUser) { alert("Please sign in to view your cart."); openAuthModal(); return; }
+      const container = document.getElementById('cart-items');
+      container.innerHTML = '';
+      let total = 0;
+      (userData.cart || []).forEach((item, index) => {
+        total += item.price;
+        container.innerHTML += `
+          <div class="flex justify-between items-center bg-slate-950 p-2.5 rounded-xl text-xs">
+            <span>${item.title}</span>
+            <div class="flex items-center space-x-2">
+              <span class="gold-text font-bold">₦${item.price.toLocaleString()}</span>
+              <button onclick="removeFromCart(${index})" class="text-rose-400 hover:text-rose-200"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+      });
+      document.getElementById('cart-total').innerText = '₦' + total.toLocaleString();
+      document.getElementById('modal-cart').classList.remove('hidden');
+    }
+
+    function removeFromCart(index) { userData.cart.splice(index, 1); saveUserDataToFirestore(); openCartModal(); }
+    function closeCartModal() { document.getElementById('modal-cart').classList.add('hidden'); }
+
+    function processCartCheckout() {
+      const total = (userData.cart || []).reduce((sum, item) => sum + item.price, 0);
+      if (total === 0) return alert("Your cart is empty!");
+
+      if (userData.wallet >= total) {
+        userData.wallet -= total;
+        userData.cart.forEach(item => {
+          if (item.type === 'digital') {
+            userData.downloads.push({ title: item.title, date: new Date().toLocaleDateString(), fileUrl: item.fileUrl });
+          }
+        });
+        userData.cart = [];
+        saveUserDataToFirestore();
+        closeCartModal();
+        alert("Payment successful using your Wallet Balance! Items ready in your Client Portal Locker.");
+        switchTab('dashboard');
+      } else {
+        alert("Insufficient wallet balance. Please top up your wallet via Paystack!");
+        closeCartModal();
+        openTopupModal();
+      }
+    }
+
+    function calculateQuote() {
+      const basePrice = parseFloat(document.getElementById('comm-style').value);
+      const licenseMultiplier = parseFloat(document.querySelector('input[name="license"]:checked').value);
+      const total = basePrice * licenseMultiplier;
+      document.getElementById('comm-total').innerText = '₦' + total.toLocaleString();
+      return total;
+    }
+
+    function handleCommissionSubmit(e) {
+      e.preventDefault();
+      if (!currentUser) { alert("Please sign in or register to submit a commission."); openAuthModal(); return; }
+      const styleSelect = document.getElementById('comm-style');
+      const styleName = styleSelect.options[styleSelect.selectedIndex].text.split('-')[0].trim();
+      const desc = document.getElementById('comm-desc').value;
+      const amount = calculateQuote();
+
+      const newCommission = {
+        id: 'COMM-' + Math.floor(1000 + Math.random() * 9000),
+        style: styleName,
+        desc: desc,
+        amount: amount,
+        status: 'In Progress',
+        proofUrl: null,
+        revisions: []
+      };
+
+      if (!userData.commissions) userData.commissions = [];
+      userData.commissions.push(newCommission);
+      saveUserDataToFirestore();
+      document.getElementById('commission-form').reset();
+      calculateQuote();
+      alert("Commission request submitted successfully to the cloud!");
+      switchTab('dashboard');
+    }
+
+    function renderClientPortal() {
+      const commList = document.getElementById('active-commissions-list');
+      commList.innerHTML = '';
+
+      if (!userData.commissions || userData.commissions.length === 0) {
+        commList.innerHTML = '<p class="text-xs text-slate-500">No active custom commission orders found.</p>';
+      } else {
+        userData.commissions.forEach((comm, idx) => {
+          let statusBadge = comm.status === 'Completed' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 
+                           comm.status === 'Review Pending' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+          
+          commList.innerHTML += `
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+              <div class="flex justify-between items-start">
+                <div>
+                  <span class="text-xs font-mono text-slate-500">${comm.id}</span>
+                  <h4 class="font-bold text-sm">${comm.style}</h4>
+                  <p class="text-xs text-slate-400 mt-1">${comm.desc}</p>
+                </div>
+                <span class="text-xs px-2.5 py-1 rounded-full border ${statusBadge} font-semibold">${comm.status}</span>
+              </div>
+              ${comm.proofUrl ? `
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 space-y-2">
+                  <span class="text-xs text-amber-400 font-semibold block">Artist Proof Sketch Submitted:</span>
+                  <img src="${comm.proofUrl}" class="w-full h-32 object-cover rounded-lg">
+                  ${comm.status === 'Review Pending' ? `
+                    <div class="flex gap-2">
+                      <button onclick="approveProof(${idx})" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg text-xs transition">Approve Final</button>
+                      <button onclick="requestRevision(${idx})" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 font-semibold px-3 py-1.5 rounded-lg text-xs border border-rose-500/30 transition">Request Revision</button>
+                    </div>
+                  ` : ''}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        });
+      }
+
+      const locker = document.getElementById('download-locker');
+      locker.innerHTML = '';
+      if (!userData.downloads || userData.downloads.length === 0) {
+        locker.innerHTML = '<p class="text-xs text-slate-500">Your digital locker is empty.</p>';
+      } else {
+        userData.downloads.forEach(dl => {
+          locker.innerHTML += `
+            <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+              <div>
+                <p class="font-semibold text-slate-200">${dl.title}</p>
+                <span class="text-slate-500 text-[10px]">${dl.date}</span>
+              </div>
+              <button onclick="alert('Simulating download for: ${dl.title}')" class="bg-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-slate-950 font-bold px-2.5 py-1.5 rounded-lg border border-amber-500/30 transition"><i class="fa-solid fa-download"></i></button>
+            </div>
+          `;
+        });
+      }
+    }
+
+    function approveProof(idx) {
+      userData.commissions[idx].status = 'Completed';
+      userData.downloads.push({ title: `Final Artwork (${userData.commissions[idx].id})`, date: new Date().toLocaleDateString(), fileUrl: userData.commissions[idx].proofUrl });
+      saveUserDataToFirestore();
+      alert("Artwork approved! Unlocked in your Digital Locker.");
+      renderClientPortal();
+    }
+
+    function requestRevision(idx) {
+      const note = prompt("Enter specific revision comments for the artist:");
+      if (note) {
+        if (!userData.commissions[idx].revisions) userData.commissions[idx].revisions = [];
+        userData.commissions[idx].revisions.push(note);
+        userData.commissions[idx].status = 'In Progress';
+        saveUserDataToFirestore();
+        alert("Revision requested! Artist notified.");
+        renderClientPortal();
+      }
+    }
+
+    function renderAdminPortal() {
+      const container = document.getElementById('admin-commissions-list');
+      container.innerHTML = '';
+      if (!userData.commissions || userData.commissions.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-500">No active client commissions to manage.</p>';
+      } else {
+        userData.commissions.forEach((comm, idx) => {
+          container.innerHTML += `
+            <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3">
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-mono text-amber-400 font-bold">${comm.id}</span>
+                <span class="text-slate-400">${comm.style} (₦${comm.amount.toLocaleString()})</span>
+              </div>
+              <p class="text-xs text-slate-300">${comm.desc}</p>
+              <div class="flex items-center space-x-2 pt-2 border-t border-slate-900">
+                <button onclick="adminUploadProof(${idx})" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition">Upload Proof Preview</button>
+              </div>
+            </div>
+          `;
+        });
+      }
+    }
+
+    function adminUploadProof(idx) {
+      const sampleImg = 'https://picsum.photos/500/400?random=' + Math.floor(Math.random()*100);
+      userData.commissions[idx].proofUrl = sampleImg;
+      userData.commissions[idx].status = 'Review Pending';
+      saveUserDataToFirestore();
+      alert("Proof sketch uploaded!");
+      renderAdminPortal();
+    }
+
+    function openTopupModal() {
+      if (!currentUser) { alert("Please sign in or register to fund your wallet."); openAuthModal(); return; }
+      document.getElementById('modal-topup').classList.remove('hidden');
+    }
+    function closeTopupModal() { document.getElementById('modal-topup').classList.add('hidden'); }
+    function copyAcc() { navigator.clipboard.writeText(document.getElementById('bank-acc').innerText); alert("Account number copied!"); }
+
+    function triggerPaystackTopup() {
+      const amount = parseFloat(document.getElementById('topup-amount').value);
+      if (!amount || amount < 500) return alert("Minimum top-up amount is ₦500");
+
+      let handler = PaystackPop.setup({
+        key: 'Pk_live_fd3f31b1a0485deab79c1124eb217ddf14006847', // Integrated Paystack Live Public Key
+        email: currentUser.email,
+        amount: amount * 100,
+        currency: 'NGN',
+        callback: function(response) {
+          userData.wallet = (userData.wallet || 0) + amount;
+          saveUserDataToFirestore();
+          closeTopupModal();
+          alert(`Success! Payment Ref: ${response.reference}. ₦${amount.toLocaleString()} added to your cloud wallet.`);
+        },
+        onClose: function() { alert('Transaction canceled.'); }
+      });
+      handler.openIframe();
+    }
+  </script>
+</body>
+</html>

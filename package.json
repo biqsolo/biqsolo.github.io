@@ -1,0 +1,9 @@
+{
+  "name": "biqsolo-digital",
+  "version": "1.0.0",
+  "description": "Biqsolo Digital Platform",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "node-fetch": "^2.6.7"
+  }
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Services & Departments | BIQSOLO DIGITAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-functions-compat.js"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header id="site-header" class="sticky top-0 z-40 bg-[#08080a]/95 backdrop-blur-md border-b border-zinc-800/80"></header>
+
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-16 w-full">
+    <div class="max-w-3xl mb-12 space-y-3">
+      <span class="text-xs uppercase tracking-[0.2em] gold-text font-semibold">Our Services</span>
+      <h1 class="text-4xl sm:text-5xl font-bold">Six Dedicated <span class="gold-text">Departments</span></h1>
+      <p class="text-zinc-400 text-sm sm:text-base">
+        Click any department to open its dedicated page with full service breakdowns, deliverables, and direct consultation booking.
+      </p>
+    </div>
+
+    <div id="services-departments-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </main>
+
+  <footer id="site-footer" class="bg-[#060608] border-t border-zinc-900"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById("services-departments-list").innerHTML = DEPARTMENTS_DATA.map(d => `
+      <div class="luxury-card p-6 flex flex-col justify-between space-y-5">
+        <div>
+          <span class="text-xs font-mono gold-text">DEPARTMENT ${d.number}</span>
+          <h2 class="text-2xl font-bold mt-1 mb-2">${d.name}</h2>
+          <p class="text-zinc-400 text-xs leading-relaxed mb-4">${d.tagline}</p>
+          <ul class="space-y-1.5 text-xs text-zinc-300 border-t border-zinc-800/80 pt-4">
+            ${d.services.map(s => `<li><span class="gold-text mr-2">&#9670;</span>${s}</li>`).join("")}
+          </ul>
+        </div>
+        <div class="flex gap-2 pt-2">
+          <a href="department.html?dept=${d.slug}" class="flex-1 text-center btn-gold py-2.5 rounded text-xs">Dedicated Page</a>
+          <a href="contact.html?dept=${encodeURIComponent(d.name)}#request" class="btn-outline-gold px-4 py-2.5 rounded text-xs">Request</a>
+        </div>
+      </div>
+    `).join("");
+
+    initPageShell("services");
+  </script>
+</body>
+</html>

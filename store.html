@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Store | BIQSOLO DIGITAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-functions-compat.js"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header id="site-header" class="sticky top-0 z-40 bg-[#08080a]/95 backdrop-blur-md border-b border-zinc-800/80"></header>
+
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-16 w-full space-y-14">
+    <div class="flex flex-wrap justify-between items-end gap-4">
+      <div>
+        <span class="text-xs uppercase tracking-[0.2em] gold-text font-semibold">Digital & Physical Store</span>
+        <h1 class="text-4xl font-bold mt-1">BIQSOLO <span class="gold-text">Storefront</span></h1>
+        <p class="text-zinc-400 text-sm mt-1">Prices in Nigerian Naira (₦). Digital purchases unlock in your Client Portal.</p>
+      </div>
+      <div class="flex gap-2 text-xs">
+        <button onclick="filterStore('all')" class="btn-outline-gold px-4 py-2 rounded">All</button>
+        <button onclick="filterStore('digital')" class="bg-[#15151a] hover:border-[#d4af37] border border-zinc-800 px-4 py-2 rounded">Digital</button>
+        <button onclick="filterStore('physical')" class="bg-[#15151a] hover:border-[#d4af37] border border-zinc-800 px-4 py-2 rounded">Physical</button>
+      </div>
+    </div>
+
+    <div id="store-catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+    <section id="cart" class="luxury-card p-8 max-w-3xl mx-auto space-y-5">
+      <h2 class="text-2xl font-bold">Shopping <span class="gold-text">Cart & Checkout</span></h2>
+      <div id="store-cart-list" class="space-y-2.5 text-sm"></div>
+      <div class="border-t border-zinc-800 pt-4 flex justify-between items-center">
+        <span class="text-zinc-300 font-semibold">Total Amount</span>
+        <span id="store-cart-total" class="text-2xl font-bold gold-text">₦0</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+        <button onclick="checkoutWithPaystackDirect()" class="btn-gold py-3 rounded text-xs uppercase tracking-wider">Pay with Paystack</button>
+        <button onclick="checkoutWithWalletBalance()" class="btn-outline-gold py-3 rounded text-xs uppercase tracking-wider">Pay from Wallet</button>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer" class="bg-[#060608] border-t border-zinc-900"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let currentFilter = "all";
+    let loadedProducts = [...DEFAULT_STORE_PRODUCTS];
+
+    function onProductsLoaded(products) {
+      loadedProducts = products;
+      drawStoreCatalog();
+    }
+
+    function filterStore(type) {
+      currentFilter = type;
+      drawStoreCatalog();
+    }
+
+    function drawStoreCatalog() {
+      const items = currentFilter === "all" ? loadedProducts : loadedProducts.filter(p => p.type === currentFilter);
+      document.getElementById("store-catalog-grid").innerHTML = items.map(p => `
+        <div class="luxury-card overflow-hidden flex flex-col justify-between">
+          <div>
+            <img src="${p.img}" alt="${p.title}" class="w-full h-48 object-cover">
+            <div class="p-5">
+              <span class="text-[10px] uppercase tracking-wider gold-text font-semibold">${p.category || p.type}</span>
+              <h3 class="font-bold text-lg mt-1">${p.title}</h3>
+              <p class="text-zinc-400 text-xs mt-2 leading-relaxed">${p.description || ""}</p>
+              <p class="gold-text font-bold text-xl mt-4">${formatNaira(p.price)}</p>
+            </div>
+          </div>
+          <div class="px-5 pb-5">
+            <button onclick="addProductToCart('${p.id}')" class="w-full btn-gold py-2.5 rounded text-xs uppercase tracking-wider">Add to Cart</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    async function addProductToCart(productId) {
+      if (!currentUser) { openAuthModal(); return; }
+      const prod = loadedProducts.find(p => p.id == productId);
+      if (!prod) return;
+      const nextCart = [...(userProfile.cart || []), prod];
+      await db.collection("users").doc(currentUser.uid).set({ cart: nextCart }, { merge: true });
+      alert(`Added "${prod.title}" to your cart.`);
+    }
+
+    async function removeStoreCartItem(idx) {
+      const nextCart = [...(userProfile.cart || [])];
+      nextCart.splice(idx, 1);
+      await db.collection("users").doc(currentUser.uid).set({ cart: nextCart }, { merge: true });
+    }
+
+    function renderStoreCart() {
+      const cart = userProfile.cart || [];
+      let total = 0;
+      document.getElementById("store-cart-list").innerHTML = cart.length === 0
+        ? `<p class="text-zinc-500 text-xs">Your cart is currently empty.</p>`
+        : cart.map((item, i) => {
+            total += Number(item.price);
+            return `
+              <div class="flex justify-between items-center bg-black p-3 rounded border border-zinc-800">
+                <div>
+                  <span class="font-medium">${item.title}</span>
+                  <span class="text-[11px] text-zinc-500 ml-2 uppercase">(${item.type})</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <span class="gold-text font-bold">${formatNaira(item.price)}</span>
+                  <button onclick="removeStoreCartItem(${i})" class="text-red-400 hover:text-red-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            `;
+          }).join("");
+      document.getElementById("store-cart-total").textContent = formatNaira(total);
+    }
+
+    async function checkoutWithPaystackDirect() {
+      if (!currentUser) { openAuthModal(); return; }
+      const cart = userProfile.cart || [];
+      const total = cart.reduce((s, i) => s + Number(i.price), 0);
+      if (total <= 0) return alert("Your cart is empty.");
+
+      const ref = `BIQ_ORD_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+      const orderRef = await db.collection("orders").add({
+        userId: currentUser.uid,
+        customerEmail: currentUser.email,
+        items: cart,
+        totalAmount: total,
+        paymentStatus: "pending",
+        paystackReference: ref,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
+      const handler = PaystackPop.setup({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: currentUser.email,
+        amount: Math.round(total * 100),
+        currency: "NGN",
+        ref,
+        callback: async function (response) {
+          try {
+            const verifyFn = functions.httpsCallable("verifyPaystackTransaction");
+            await verifyFn({
+              reference: response.reference,
+              purpose: "order_checkout",
+              expectedAmountNaira: total,
+              orderId: orderRef.id
+            });
+            await db.collection("users").doc(currentUser.uid).set({ cart: [] }, { merge: true });
+            alert("Payment verified! View your order & downloads in the Client Portal.");
+            window.location.href = "client-dashboard.html";
+          } catch (err) {
+            alert("Verification failed: " + err.message);
+          }
+        }
+      });
+      handler.openIframe();
+    }
+
+    async function checkoutWithWalletBalance() {
+      if (!currentUser) { openAuthModal(); return; }
+      const cart = userProfile.cart || [];
+      if (cart.length === 0) return alert("Your cart is empty.");
+      try {
+        const walletCheckoutFn = functions.httpsCallable("checkoutWithWallet");
+        await walletCheckoutFn({ items: cart });
+        alert("Order completed using Wallet Balance!");
+        window.location.href = "client-dashboard.html";
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function onUserDataLoaded() {
+      renderStoreCart();
+    }
+
+    drawStoreCatalog();
+    renderStoreCart();
+    initPageShell("store");
+  </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client Portal | BIQSOLO DIGITAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-functions-compat.js"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header id="site-header" class="sticky top-0 z-40 bg-[#08080a]/95 backdrop-blur-md border-b border-zinc-800/80"></header>
+
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-16 w-full space-y-10">
+    <div class="flex flex-wrap justify-between items-center gap-4 border-b border-zinc-800 pb-6">
+      <div>
+        <span class="text-xs uppercase tracking-widest gold-text font-semibold">Client Workspace</span>
+        <h1 class="text-3xl sm:text-4xl font-bold mt-1">Client <span class="gold-text">Portal</span></h1>
+        <p id="client-account-meta" class="text-zinc-400 text-xs mt-1">Please sign in to access your profile, orders, and requests.</p>
+      </div>
+      <a href="contact.html#request" class="btn-gold px-5 py-2.5 rounded text-xs uppercase tracking-wider">+ Request Service</a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 luxury-card p-6 space-y-4">
+        <h2 class="text-xl font-bold">My Service Requests & Deliverables</h2>
+        <div id="portal-requests-list" class="space-y-4 text-xs"></div>
+      </div>
+
+      <div class="space-y-6">
+        <div class="luxury-card p-6 space-y-4">
+          <h2 class="text-xl font-bold gold-text">Digital Locker</h2>
+          <div id="portal-downloads-list" class="space-y-3 text-xs"></div>
+        </div>
+
+        <div class="luxury-card p-6 space-y-4">
+          <h2 class="text-xl font-bold">Order History</h2>
+          <div id="portal-orders-list" class="space-y-3 text-xs"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="site-footer" class="bg-[#060608] border-t border-zinc-900"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    async function loadPortalData(user) {
+      if (!user) {
+        document.getElementById("client-account-meta").textContent = "Sign in required.";
+        return;
+      }
+      document.getElementById("client-account-meta").textContent = `Signed in as ${user.email}`;
+
+      const reqSnap = await db.collection("commissions").where("userId", "==", user.uid).get();
+      document.getElementById("portal-requests-list").innerHTML = reqSnap.empty
+        ? `<p class="text-zinc-500">No service requests submitted yet.</p>`
+        : reqSnap.docs.map(d => {
+            const r = d.data();
+            return `
+              <div class="bg-black p-4 rounded border border-zinc-800 space-y-2">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <span class="gold-text font-semibold">${r.department || "Service"}</span>
+                    <h3 class="font-bold text-sm text-white">${r.style} &mdash; ${formatNaira(r.amount)}</h3>
+                    <p class="text-zinc-400 mt-1">${r.desc}</p>
+                  </div>
+                  <span class="px-2.5 py-1 rounded bg-zinc-900 border border-[#d4af37]/40 gold-text">${r.status}</span>
+                </div>
+                ${r.proofUrl ? `
+                  <div class="pt-3 border-t border-zinc-800 space-y-2">
+                    <img src="${r.proofUrl}" class="w-full h-40 object-cover rounded">
+                    ${r.status === "Review Pending" ? `<button onclick="approveDeliverable('${d.id}', '${r.style}', '${r.proofUrl}')" class="btn-gold px-3 py-1.5 rounded text-xs">Approve & Unlock</button>` : ""}
+                  </div>
+                ` : ""}
+              </div>
+            `;
+          }).join("");
+
+      const ordSnap = await db.collection("orders").where("userId", "==", user.uid).get();
+      document.getElementById("portal-orders-list").innerHTML = ordSnap.empty
+        ? `<p class="text-zinc-500">No orders yet.</p>`
+        : ordSnap.docs.map(d => {
+            const o = d.data();
+            return `
+              <div class="p-3 bg-black rounded border border-zinc-800 flex justify-between">
+                <span>${(o.items || []).map(i => i.title).join(", ")}</span>
+                <span class="gold-text font-bold">${formatNaira(o.totalAmount)} (${o.paymentStatus})</span>
+              </div>
+            `;
+          }).join("");
+    }
+
+    async function approveDeliverable(id, title, url) {
+      await db.collection("commissions").doc(id).update({ status: "Completed" });
+      await db.collection("users").doc(currentUser.uid).set({
+        downloads: firebase.firestore.FieldValue.arrayUnion({
+          title: `Completed: ${title}`,
+          date: new Date().toLocaleDateString(),
+          fileUrl: url
+        })
+      }, { merge: true });
+      alert("Deliverable approved and added to your Digital Locker.");
+      loadPortalData(currentUser);
+    }
+
+    function onUserDataLoaded(user, isAdmin, profile) {
+      const downloads = profile.downloads || [];
+      document.getElementById("portal-downloads-list").innerHTML = downloads.length === 0
+        ? `<p class="text-zinc-500">No digital downloads yet.</p>`
+        : downloads.map(dl => `
+            <div class="p-3 bg-black rounded border border-zinc-800 flex justify-between items-center">
+              <div>
+                <p class="font-semibold text-white">${dl.title}</p>
+                <span class="text-[10px] text-zinc-500">${dl.date}</span>
+              </div>
+              <a href="${dl.fileUrl}" target="_blank" class="btn-gold px-2.5 py-1.5 rounded"><i class="fa-solid fa-download"></i></a>
+            </div>
+          `).join("");
+    }
+
+    initPageShell("client", (user) => loadPortalData(user));
+  </script>
+</body>
+</html>

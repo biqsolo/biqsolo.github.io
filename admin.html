@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard | BIQSOLO DIGITAL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-functions-compat.js"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header id="site-header" class="sticky top-0 z-40 bg-[#08080a]/95 backdrop-blur-md border-b border-zinc-800/80"></header>
+
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 py-16 w-full">
+    <div id="admin-guard-notice" class="luxury-card p-8 text-center max-w-xl mx-auto space-y-3">
+      <i class="fa-solid fa-lock text-2xl gold-text"></i>
+      <h1 class="text-2xl font-bold">Restricted Administration</h1>
+      <p class="text-zinc-400 text-xs">Admin access is enforced server-side via Firebase Custom Claims and Firestore Security Rules.</p>
+    </div>
+
+    <div id="admin-workspace" class="hidden space-y-10">
+      <div class="border-b border-zinc-800 pb-4">
+        <span class="text-xs uppercase tracking-widest gold-text font-semibold">Management</span>
+        <h1 class="text-3xl sm:text-4xl font-bold mt-1">Admin <span class="gold-text">Control Center</span></h1>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="luxury-card p-6">
+          <h2 class="text-xl font-bold gold-text mb-4">Add Store Product</h2>
+          <form onsubmit="publishStoreProduct(event)" class="space-y-3 text-xs">
+            <div>
+              <label class="block text-zinc-400 mb-1">Product Title</label>
+              <input type="text" id="adm-prod-title" required class="w-full bg-black border border-zinc-800 rounded p-2.5 outline-none">
+            </div>
+            <div>
+              <label class="block text-zinc-400 mb-1">Type</label>
+              <select id="adm-prod-type" class="w-full bg-black border border-zinc-800 rounded p-2.5 outline-none">
+                <option value="digital">Digital Product</option>
+                <option value="physical">Physical Product</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-zinc-400 mb-1">Category</label>
+              <input type="text" id="adm-prod-cat" required placeholder="e.g., Product Design & Development" class="w-full bg-black border border-zinc-800 rounded p-2.5 outline-none">
+            </div>
+            <div>
+              <label class="block text-zinc-400 mb-1">Price (NGN ₦)</label>
+              <input type="number" id="adm-prod-price" min="100" required class="w-full bg-black border border-zinc-800 rounded p-2.5 outline-none">
+            </div>
+            <div>
+              <label class="block text-zinc-400 mb-1">Image URL</label>
+              <input type="url" id="adm-prod-img" required class="w-full bg-black border border-zinc-800 rounded p-2.5 outline-none">
+            </div>
+            <div>
+              <label class="block text-zinc-400 mb-1">Download URL (for Digital)</label>
+              <input type="url" id="adm-prod-url" class="w-full bg-black border border-zinc-800 rounded p-2.5 outline-none">
+            </div>
+            <div>
+              <label class="block text-zinc-400 mb-1">Description</label>
+              <textarea id="adm-prod-desc" rows="2" required class="w-full bg-black border border-zinc-800 rounded p-2.5 outline-none"></textarea>
+            </div>
+            <button type="submit" class="w-full btn-gold py-2.5 rounded uppercase tracking-wider">Publish Product</button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-2 luxury-card p-6 space-y-4">
+          <h2 class="text-xl font-bold gold-text">Client Service Requests</h2>
+          <div id="adm-requests-list" class="space-y-3 text-xs"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="luxury-card p-6 space-y-3">
+          <h2 class="text-xl font-bold gold-text">Customer Orders</h2>
+          <div id="adm-orders-list" class="space-y-2.5 text-xs"></div>
+        </div>
+        <div class="luxury-card p-6 space-y-3">
+          <h2 class="text-xl font-bold gold-text">Enquiries</h2>
+          <div id="adm-enquiries-list" class="space-y-2.5 text-xs"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="site-footer" class="bg-[#060608] border-t border-zinc-900"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    async function publishStoreProduct(e) {
+      e.preventDefault();
+      if (!isAdminUser) return;
+      await db.collection("products").add({
+        title: document.getElementById("adm-prod-title").value.trim(),
+        type: document.getElementById("adm-prod-type").value,
+        category: document.getElementById("adm-prod-cat").value.trim(),
+        price: Number(document.getElementById("adm-prod-price").value),
+        img: document.getElementById("adm-prod-img").value.trim(),
+        fileUrl: document.getElementById("adm-prod-url").value.trim() || "#",
+        description: document.getElementById("adm-prod-desc").value.trim(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      e.target.reset();
+      alert("Product published to store.");
+    }
+
+    async function sendProofToClient(reqId) {
+      if (!isAdminUser) return;
+      const proofUrl = prompt("Enter proof/deliverable preview URL:");
+      if (!proofUrl) return;
+      await db.collection("commissions").doc(reqId).update({
+        proofUrl,
+        status: "Review Pending"
+      });
+      alert("Proof sent to client.");
+      loadAdminCollections();
+    }
+
+    async function loadAdminCollections() {
+      const reqSnap = await db.collection("commissions").get();
+      document.getElementById("adm-requests-list").innerHTML = reqSnap.docs.map(d => {
+        const r = d.data();
+        return `
+          <div class="bg-black p-4 rounded border border-zinc-800 space-y-2">
+            <div class="flex justify-between">
+              <strong class="gold-text">${r.clientEmail} &mdash; ${r.style}</strong>
+              <span>${formatNaira(r.amount)} (${r.status})</span>
+            </div>
+            <p class="text-zinc-400">${r.desc}</p>
+            <button onclick="sendProofToClient('${d.id}')" class="btn-outline-gold px-3 py-1 rounded">Upload Proof URL</button>
+          </div>
+        `;
+      }).join("");
+
+      const ordSnap = await db.collection("orders").get();
+      document.getElementById("adm-orders-list").innerHTML = ordSnap.docs.map(d => {
+        const o = d.data();
+        return `
+          <div class="p-3 bg-black rounded border border-zinc-800 flex justify-between">
+            <span>${o.customerEmail}</span>
+            <span class="gold-text font-bold">${formatNaira(o.totalAmount)} &mdash; ${o.paymentStatus}</span>
+          </div>
+        `;
+      }).join("");
+
+      const enqSnap = await db.collection("enquiries").get();
+      document.getElementById("adm-enquiries-list").innerHTML = enqSnap.docs.map(d => {
+        const q = d.data();
+        return `
+          <div class="p-3 bg-black rounded border border-zinc-800">
+            <strong class="gold-text">${q.name} (${q.email})</strong>: ${q.subject}
+            <p class="text-zinc-400 mt-1">${q.message}</p>
+          </div>
+        `;
+      }).join("");
+    }
+
+    initPageShell("admin", (user, isAdmin) => {
+      if (user && isAdmin) {
+        document.getElementById("admin-guard-notice").classList.add("hidden");
+        document.getElementById("admin-workspace").classList.remove("hidden");
+        loadAdminCollections();
+      }
+    });
+  </script>
+</body>
+</html>

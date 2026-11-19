@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIQSOLO DIGITAL 
+  | Creative & Digital Solutions Studio</title>
+  <meta name="description" content="We provide innovative digital, creative, business and technology solutions to individuals, entrepreneurs and organizations." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-functions-compat.js"></script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header id="site-header" class="sticky top-0 z-40 bg-[#08080a]/95 backdrop-blur-md border-b border-zinc-800/80"></header>
+
+  <main class="flex-grow">
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 pt-16 pb-20 text-center">
+      <span class="inline-block border border-[#d4af37]/40 text-[#d4af37] text-xs uppercase tracking-[0.22em] px-4 py-1.5 rounded-full mb-6">
+        Creative & Digital Solutions Studio
+      </span>
+      <h1 class="text-4xl sm:text-6xl font-bold tracking-tight max-w-4xl mx-auto leading-tight mb-6">
+        Transforming Ideas Into <span class="gold-gradient-text">Digital Solutions.</span>
+      </h1>
+      <p class="text-zinc-300 text-base sm:text-lg max-w-2xl mx-auto mb-10">
+        Your trusted partner for creative design, business development, technology and digital innovation.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="services.html" class="btn-gold px-7 py-3.5 rounded text-xs sm:text-sm uppercase tracking-wider">Explore Our Services</a>
+        <a href="contact.html#request" class="btn-outline-gold px-7 py-3.5 rounded text-xs sm:text-sm uppercase tracking-wider">Request a Consultation</a>
+      </div>
+    </section>
+
+    <div class="section-divider max-w-7xl mx-auto"></div>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="space-y-4">
+        <span class="text-xs uppercase tracking-widest gold-text font-semibold">Company Overview</span>
+        <h2 class="text-3xl sm:text-4xl font-bold">Precision Execution Across Design, Business & Technology</h2>
+        <p class="text-zinc-300 leading-relaxed">
+          We provide innovative digital, creative, business and technology solutions to individuals, entrepreneurs and organizations.
+        </p>
+        <p class="text-zinc-400 text-sm leading-relaxed">
+          Whether launching a brand identity, structuring a business strategy, engineering web software, or acquiring ready-to-use digital products, BIQSOLO DIGITAL delivers structured, reliable solutions.
+        </p>
+        <div class="pt-2">
+          <a href="about.html" class="gold-text text-sm font-semibold hover:underline">Read About Our Vision & Mission &rarr;</a>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="luxury-card p-6">
+          <div class="text-3xl font-bold gold-text font-serif-luxury mb-1">06</div>
+          <div class="text-xs text-zinc-300 font-medium">Specialized Departments</div>
+        </div>
+        <div class="luxury-card p-6">
+          <div class="text-3xl font-bold gold-text font-serif-luxury mb-1">24/7</div>
+          <div class="text-xs text-zinc-300 font-medium">Enquiries & Consultations</div>
+        </div>
+        <div class="luxury-card p-6">
+          <div class="text-3xl font-bold gold-text font-serif-luxury mb-1">NGN</div>
+          <div class="text-xs text-zinc-300 font-medium">Verified Paystack Checkout</div>
+        </div>
+        <div class="luxury-card p-6">
+          <div class="text-3xl font-bold gold-text font-serif-luxury mb-1">Cloud</div>
+          <div class="text-xs text-zinc-300 font-medium">Client & Admin Portals</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
+      <div class="flex flex-wrap justify-between items-end gap-4 mb-10">
+        <div>
+          <span class="text-xs uppercase tracking-widest gold-text font-semibold">Capabilities</span>
+          <h2 class="text-3xl sm:text-4xl font-bold mt-1">Six Core <span class="gold-text">Departments</span></h2>
+        </div>
+        <a href="services.html" class="btn-outline-gold px-5 py-2.5 rounded text-xs uppercase tracking-wider">All Departments</a>
+      </div>
+      <div id="home-dept-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
+      <div class="flex flex-wrap justify-between items-end gap-4 mb-10">
+        <div>
+          <span class="text-xs uppercase tracking-widest gold-text font-semibold">Digital Store</span>
+          <h2 class="text-3xl sm:text-4xl font-bold mt-1">Featured <span class="gold-text">Products</span></h2>
+        </div>
+        <a href="store.html" class="btn-gold px-5 py-2.5 rounded text-xs uppercase tracking-wider">Visit Store</a>
+      </div>
+      <div id="home-store-cards" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+    </section>
+  </main>
+
+  <footer id="site-footer" class="bg-[#060608] border-t border-zinc-900"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById("home-dept-cards").innerHTML = DEPARTMENTS_DATA.map(d => `
+      <div class="luxury-card p-6 flex flex-col justify-between">
+        <div>
+          <span class="text-xs font-mono gold-text">DEPARTMENT ${d.number}</span>
+          <h3 class="text-xl font-bold mt-1 mb-2">${d.name}</h3>
+          <p class="text-zinc-400 text-xs leading-relaxed mb-4">${d.tagline}</p>
+        </div>
+        <a href="department.html?dept=${d.slug}" class="text-xs gold-text font-semibold hover:underline">Explore Department &rarr;</a>
+      </div>
+    `).join("");
+
+    function onProductsLoaded(products) {
+      document.getElementById("home-store-cards").innerHTML = products.slice(0, 3).map(p => `
+        <div class="luxury-card overflow-hidden flex flex-col justify-between">
+          <div>
+            <img src="${p.img}" alt="${p.title}" class="w-full h-44 object-cover">
+            <div class="p-5">
+              <span class="text-[10px] uppercase tracking-wider gold-text font-semibold">${p.type}</span>
+              <h3 class="font-bold text-base mt-1">${p.title}</h3>
+              <p class="gold-text font-bold text-lg mt-2">${formatNaira(p.price)}</p>
+            </div>
+          </div>
+          <div class="px-5 pb-5">
+            <a href="store.html" class="block text-center btn-outline-gold py-2 rounded text-xs">View in Store</a>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    initPageShell("home");
+  </script>
+</body>
+</html>
